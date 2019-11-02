@@ -58,4 +58,4 @@ typings/
 .env
 
 .idyll
-build
+/docs
