@@ -1,10 +1,10 @@
 {
   "name": "geom-vis",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "idyll": {
-    "theme": "default",
-    "layout": "centered",
+    "theme": "none",
+    "layout": "none",
     "css": "styles.css",
     "authorView": false,
     "output": "docs/"

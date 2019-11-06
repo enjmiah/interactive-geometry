@@ -1,13 +1,13 @@
 {
-  "name": "post-1",
-  "version": "1.0.0",
+  "name": "geom-vis-half-edge-article",
+  "version": "0.1.0",
   "license": "MIT",
   "idyll": {
-    "theme": "default",
-    "layout": "centered",
+    "theme": "tufte",
+    "layout": "none",
     "css": "styles.css",
     "authorView": false,
-    "output": "../../docs/post-1/",
+    "output": "../../docs/half-edge/",
     "components": [
       "../../components/",
       "components"
