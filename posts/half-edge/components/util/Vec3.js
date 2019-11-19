@@ -31,10 +31,20 @@ export function Vec3(dx, dy, dz) {
         this.value[2] = new_z;
     };
 
+    this.setX = function(new_x) {
+        this.value[0] = new_x;
+    };
+    this.setY = function(new_y) {
+        this.value[1] = new_y;
+    };
+    this.setZ = function(new_z) {
+        this.value[2] = new_z;
+    };
+
     /**
      * Return the Euclidean norm of this vector.
      */
-    this.norm = function () {
+    this.norm = function() {
         return Math.sqrt(this.value[0] * this.value[0] +
                          this.value[1] * this.value[1] +
                          this.value[2] * this.value[2]);
@@ -43,10 +53,10 @@ export function Vec3(dx, dy, dz) {
     /**
      * Return a unit-length vector which points in the same direction.
      */
-    this.normalized = function () {
+    this.normalized = function() {
         let length = this.norm();
         if (Math.abs(length) < 0.0000001) {
-            throw Exception("Cannot normalize an almost zero vector.");
+            return this.copy();
         }
 
         let factor = 1.0 / length;
@@ -85,6 +95,15 @@ export function Vec3(dx, dy, dz) {
         var new_z = this.value[2] * s;
         return new Vec3(new_x, new_y, new_z);
     };
+
+    /**
+     * Return the dot product of `this`` and `other`.
+     */
+    this.dot = function(other) {
+        return (this.value[0] * other.value[0] +
+                this.value[1] * other.value[1] +
+                this.value[2] * other.value[2]);
+    }
 
     /**
      * Return true if and only if `this` is mathematically equivalent to
