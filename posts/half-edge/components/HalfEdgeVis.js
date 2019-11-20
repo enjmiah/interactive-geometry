@@ -59,6 +59,7 @@ f 4 7 5
             this.setState({mesh: mesh});
         }
 
+        /*
         // Vertices
         let stringBuilder = ["V = {"];
         for (let i = 0, len = mesh.vertices.length; i < len; ++i) {
@@ -111,6 +112,7 @@ f 4 7 5
             edges: mesh.edges,
             faces: mesh.faces
         });
+        //*/
     }
 }
 

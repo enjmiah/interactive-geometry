@@ -57,7 +57,7 @@ th {
 
 td, th {
   border: 1px solid #ccc;
-  padding: 2px 8px;
+  padding: 1px 8px;
   text-align: center;
 }
 
@@ -67,4 +67,13 @@ h4 {
   font-variant: small-caps;
   text-transform: lowercase;
   letter-spacing: 0.15em;
+}
+
+.error {
+  color: #f30;
+  fill: currentColor;
+}
+
+sub, sup {
+  font-size: 0.75em;
 }

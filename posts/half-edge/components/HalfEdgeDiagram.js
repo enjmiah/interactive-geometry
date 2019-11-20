@@ -13,11 +13,18 @@ const height = canvasHeight - margin.top - margin.bottom;
 export class HalfEdgeDiagram extends D3Component {
 
     initialize(node, props) {
+        if (typeof props.mesh === "string") {
+            console.error(props.mesh);
+            return;
+        }
+
         let svg = (this.svg = d3.select(node).append('svg'));
         svg = svg
             .attr("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`)
             .style("width", "100%")
             .style("height", "auto");
+        // Define arrow-head
+        // TODO: Change to harpoons
         svg
             .append("svg:defs")
                 .append("svg:marker")
@@ -68,6 +75,17 @@ export class HalfEdgeDiagram extends D3Component {
     }
 
     update(props, oldProps) {
+        if (typeof props.mesh === "string") {
+            const svg = this.svg.select("g");
+            svg.selectAll("*").remove();
+            svg.append("text")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("class", "error")
+                .text(props.mesh);
+            return;
+        }
+
         const vertices = props.mesh.vertices;
         const edges = props.mesh.edges;
 
@@ -75,13 +93,16 @@ export class HalfEdgeDiagram extends D3Component {
         this.y.domain(d3.extent(vertices, (d) => d.getPosition().y()));
 
         const svg = this.svg.select("g");
+        svg.selectAll("text").remove();
         const vertex = svg
             .selectAll("circle")
             .data(vertices);
         // Add vertices as needed
         vertex.enter().append("circle")
-            .merge(vertex)
-            .attr("r", 4);
+            .attr("r", 4)
+            .attr("cx", (d) => this.x(d.getPosition().x()))
+            .attr("cy", (d) => this.y(d.getPosition().y()))
+            .merge(vertex);
         // Remove excess vertices
         vertex.exit().remove();
         // Move vertices to new positions
@@ -95,6 +116,13 @@ export class HalfEdgeDiagram extends D3Component {
             .selectAll("line")
             .data(edges);
         edge.enter().append("line")
+            .attr("x1", (e) => this.x(this.getArrowStartX(e)))
+            .attr("y1", (e) => this.y(this.getArrowStartY(e)))
+            .attr("x2", (e) => this.x(this.getArrowEndX(e)))
+            .attr("y2", (e) => this.y(this.getArrowEndY(e)))
+            .attr("stroke-width", 1)
+            .attr("marker-end", "url(#head)")
+            .attr("stroke", "black")
             .merge(edge);
         edge.exit().remove();
         edge.transition()
@@ -142,6 +170,7 @@ export class HalfEdgeDiagram extends D3Component {
         }
 
         // Offset a little bit by normal vector
+        // TODO: scale these offsets based on scale of visualizations
         const offset = normal.multiply(0.04);
         start = start.add(offset);
         end = end.add(offset);

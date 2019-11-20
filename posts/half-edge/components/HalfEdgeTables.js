@@ -5,8 +5,11 @@ function VertexTable(props) {
         const p = v.getPosition();
         const id = v.getId();
         const coordinate = <span>({p.x()}, {p.y()}, {p.z()})</span>;
-        const vertex = <span>$v_{id}$</span>;
-        const edge = <span>todo</span>;
+        const vertex = <span><em>v</em><sub>{id}</sub></span>;
+        const edge =
+            (v.getHalfEdge() !== undefined
+             ? <span><em>e</em><sub>{v.getHalfEdge().getId()}</sub></span>
+             : <span>∅</span>);
         return <tr key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
     });
     return (
@@ -76,9 +79,16 @@ export class HalfEdgeTables extends React.Component {
 
     render() {
         const { hasError, idyll, updateProps, ...props } = this.props;
+        if (typeof this.props.mesh === 'string') {
+            return (
+                <div className="half-edge-tables">
+                    <h4>Records</h4>
+                </div>
+            );
+        }
         return (
           <div className="half-edge-tables">
-            <h4>Memory Layout</h4>
+            <h4>Records</h4>
             <VertexTable mesh={this.props.mesh} />
             <FaceTable mesh={this.props.mesh} />
             <HalfEdgeTable mesh={this.props.mesh} />

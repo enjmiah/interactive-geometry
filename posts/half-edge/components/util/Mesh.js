@@ -32,8 +32,11 @@ export class Vertex {
 }
 
 export class HalfEdge {
-    constructor() {}
+    constructor(idx) {
+        this.id = idx;
+    }
 
+    getId() { return this.id; }
     getOrigin() { return this.origin; }
     getTwin() { return this.twin; }
     getPrev() { return this.prev; }
@@ -48,7 +51,11 @@ export class HalfEdge {
 }
 
 export class Face {
-    constructor() {}
+    constructor(idx) {
+        this.id = idx;
+    }
+
+    getId() { return this.id; }
 
     getHalfEdge() { return this.he; }
 
@@ -81,30 +88,11 @@ export class Mesh {
         }
 
         // Add faces
+        // FIXME: support non-triangular faces
         for (let i = 0; i < faces.length; i++) {
-            let v0 = this.vertices[faces[i][0][0]];
-            let v1 = this.vertices[faces[i][1][0]];
-            let v2 = this.vertices[faces[i][2][0]];
-            this.addFaceByVerts(v0, v1, v2);
-        }
-
-        this.edgeMap.clear();
-    }
-
-    copyMesh(m) {
-        // Copy vertices
-        for (var i = 0; i < m.getVertices().length; i++) {
-            var v = m.getVertices()[i];
-            var v_pos = v.getPos();
-            this.addVertexPos(v_pos.value[0], v_pos.value[1], v_pos.value[2], i);
-        }
-
-        // Copy faces
-        for (var i = 0; i < m.getFaces().length; i++) {
-            var f = m.getFaces()[i];
-            var v0 = this.vertices[f.vert(0).getId()];
-            var v1 = this.vertices[f.vert(1).getId()];
-            var v2 = this.vertices[f.vert(2).getId()];
+            let v0 = this.vertices[faces[i][0]];
+            let v1 = this.vertices[faces[i][1]];
+            let v2 = this.vertices[faces[i][2]];
             this.addFaceByVerts(v0, v1, v2);
         }
 
@@ -126,6 +114,13 @@ export class Mesh {
     }
 
     addFaceByVerts(v1, v2, v3) {
+        const createOrFail = (v1, v2) => {
+            let e = this.findEdge(v1, v2);
+            if (e !== undefined && e.getFace() !== undefined) {
+                throw Error(`Duplicate half edge between v${v1.getId()} and v${v2.getId()}`);
+            }
+            return this.addEdge(v1, v2);
+        };
         const findOrCreate = (v1, v2) => {
             let e = this.findEdge(v1, v2);
             if (!e) {
@@ -134,9 +129,9 @@ export class Mesh {
             return e;
         };
 
-        const e1 = findOrCreate(v1, v2);
-        const e2 = findOrCreate(v2, v3);
-        const e3 = findOrCreate(v3, v1);
+        const e1 = createOrFail(v1, v2);
+        const e2 = createOrFail(v2, v3);
+        const e3 = createOrFail(v3, v1);
         const t1 = findOrCreate(v2, v1);
         const t2 = findOrCreate(v3, v2);
         const t3 = findOrCreate(v1, v3);
@@ -150,8 +145,7 @@ export class Mesh {
 
     _addFaceByHalfEdges(e1, e2, e3, t1, t2, t3) {
         // Add the face to the mesh
-        const f = new Face();
-        this.faces.push(f);
+        const f = this.addFace();
 
         // Initialize face-edge relationship
         f.setHalfEdge(e1);
@@ -185,20 +179,19 @@ export class Mesh {
     }
 
     addFace() {
-        var f = new Face();
+        var f = new Face(this.faces.length);
         this.faces.push(f);
         return f;
     }
 
     addHalfEdge() {
-        var he = new HalfEdge();
+        var he = new HalfEdge(this.edges.length);
         this.edges.push(he);
         return he;
     }
 
     addEdge(v1, v2) {
-        var he = new HalfEdge();
-        this.edges.push(he);
+        var he = this.addHalfEdge();
 
         var key = String(v1.getId()) + "," + String(v2.getId());
         this.edgeMap.set(key, he);
@@ -255,9 +248,4 @@ export class Mesh {
         var centroid = min.add(max);
         return centroid.multiply(0.5);
     }
-
-    getVertices() { return this.vertices; }
-    getHalfEdges() { return this.edges; }
-    getFaces() { return this.faces; }
-    getNormals() { return this.normals; }
 }

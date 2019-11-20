@@ -1,77 +1,114 @@
+"use strict;"
+
 import {Mesh} from "./Mesh.js";
 
 /**
  * Parse an OBJ file.
  *
- * @param   string  str - The contents of an OBJ file
- * @return  Mesh    The mesh constructed from OBJ file
+ * @param   string       str - The contents of an OBJ file
+ * @return  Mesh|string  The mesh constructed from OBJ file, or a string
+ *                       describing an error if an error occurred.
  */
-exports.parse = function(str) {
-    const out = {
-        vertices : [],
-        normals : [],
-        texCoords : [],
-        faces : []
-    };
+export function parse(str) {
+    const vertices = [];
+    const normals = [];
+    const faces = [];
 
-    let lines = str.split("\n");
-    while (lines.length) {
-        lines = parseLine(lines, out);
-    }
-
-    const mesh = new Mesh();
-    mesh.buildMesh(out.vertices, out.normals, out.faces);
-    return mesh;
-};
-
-/**
- * Parse a line of an OBJ file.
- *
- * @param   array<string>  lines - The contents of a .obj file
- * @return  object         out - The object to be used to construct mesh
- */
-function parseLine(lines, out) {
-    const vertices = out.vertices;
-    const normals = out.normals;
-    const coords = out.texCoords;
-    const faces = out.faces;
-
-    let i = 0;
-    for (; i < lines.length; i++) {
-        const tokens = lines[i].replace(/\s+/g, " ").split(" ");
+    const lines = str.trim().split("\n");
+    let state = 0;
+    for (let i = 0; i < lines.length; ++i) {
+        const line = lines[i];
+        const tokens = line.trim().split(/\s+/g);
+        if (tokens.length === 0) {
+            continue;
+        }
         switch (tokens[0]) {
-            case 'v':
-                vertices.push([ parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]) ]);
+            case '#':
+                // comment
                 break;
+            case 'v': {
+                if (state > 0) {
+                    return `l. ${i+1}: Found vertex at unexpected place in file`;
+                }
+                if (tokens.length !== 4) {
+                    return `l. ${i+1}: Expected three components per vertex, got ${tokens.length}`;
+                }
+                const maybeVec = parseFloats([tokens[1], tokens[2], tokens[3]]);
+                if (typeof maybeVec === "string") {
+                    return `l. ${i+1}: ${maybeVec}`;
+                }
+                vertices.push(maybeVec);
+                break;
+            }
             case 'vt':
-                coords.push([ parseFloat(tokens[1]), parseFloat(tokens[2]) ]);
+                if (state > 1) {
+                    return `l. ${i+1}: Found texture coordinate at unexpected place in file`;
+                }
+                state = 1;
+                // ignore
                 break;
-            case 'vn':
-                normals.push([ parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]) ]);
+            case 'vn': {
+                if (state > 2) {
+                    return `l. ${i+1}: Found normal at unexpected place in file`;
+                }
+                state = 2;
+                if (tokens.length !== 4) {
+                    return `l. ${i+1}: Expected three components per normal, got ${tokens.length}`;
+                }
+                const maybeVec = parseFloats([tokens[1], tokens[2], tokens[3]]);
+                if (typeof maybeVec === "string") {
+                    return `l. ${i+1}: ${maybeVec}`;
+                }
+                normals.push(maybeVec);
                 break;
+            }
             case 'f':
-                var face =  [ tokens[1].split("/"),  tokens[2].split("/"), tokens[3].split("/") ]
+                if (state > 3) {
+                    return `l. ${i+1}: Found face at unexpected place in file`;
+                }
+                state = 3;
+                if (tokens.length < 4) {
+                    return `l. ${i+1}: Each face must have at least three vertices`;
+                }
+                const face = [];
+                for (let j = 1; j < tokens.length; ++j) {
+                    face.push(tokens[j].split("/")[0]);
+                }
 
-                for (var n = 0; n < face.length; n++) {
-                    var v = face[n];
-                    for (var m = 0; m < v.length; m++) {
-                        var str = v[m];
-                        if (str.length) {
-                            var value = parseInt(str);
-                            v[m] = (value >= 0)? value - 1 : vertices.length + value;
-                        } else {
-                            v[m] = null;
-                        }
+                for (let j = 0; j < face.length; ++j) {
+                    const index = Number(face[j]);
+                    if (Number.isNaN(index) || !Number.isInteger(index)) {
+                        return `l. ${i+1}: Invalid face index '${face[j]}'`;
                     }
-
-                    for (var j = v.length; j < 3; j++) {
-                        v[j] = null;
+                    face[j] = (index >= 0 ? index - 1 : vertices.length + index);
+                    if (face[j] < 0 || face[j] >= vertices.length) {
+                        return `l. ${i+1}: Face index ${face[j]+1} out of bounds`;
                     }
                 }
                 faces.push(face);
                 break;
+            default:
+                break;
         }
     }
 
-    return lines.splice(i+1);
-};
+    const mesh = new Mesh();
+    try {
+        mesh.buildMesh(vertices, normals, faces);
+    } catch (e) {
+        return e.message;
+    }
+    return mesh;
+}
+
+function parseFloats(tokens) {
+    const values = [];
+    for (const t of tokens) {
+        const f = Number(t);
+        if (Number.isNaN(f)) {
+            return `Failed to parse token '${t}' as a number`;
+        }
+        values.push(f);
+    }
+    return values;
+}
