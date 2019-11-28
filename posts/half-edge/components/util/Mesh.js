@@ -29,6 +29,38 @@ export class Vertex {
     getHalfEdge() { return this.he; }
 
     setHalfEdge(e) { this.he = e; }
+
+    getLabelPosition(boundingBox) {
+        var min_x = boundingBox[0].x();
+        var min_y = boundingBox[0].y();
+
+        var max_x = boundingBox[1].x();
+        var max_y = boundingBox[1].y();
+        
+
+        var x = this.position.x();
+        var y = this.position.y();
+
+        if (x == min_x && y == min_y) {
+            return new Vec3(-10, -10, 0);
+        } else if (x == min_x && y != min_y) {
+            return new Vec3(20, 20, 0);
+        } else if (x != min_x && y == min_y) {
+            return new Vec3(20, -15, 0);
+        } else if (x == max_x && y == max_y) {
+            return new Vec3(10, 10, 0);
+        } else if (x == max_x && y != max_y) {
+            return new Vec3(10, 0, 0);
+        } else if (x != max_x && y == max_y) {
+            return new Vec3(20, 20, 0);
+        } else{
+            return new Vec3(20, 20, 0);
+        }
+    }
+
+    // getLabelPosition(centroid) {
+
+    // }
 }
 
 export class HalfEdge {

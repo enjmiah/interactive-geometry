@@ -41,8 +41,18 @@ export class HalfEdgeDiagram extends D3Component {
             .append("g")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+
         const vertices = this.props.mesh.vertices;
         const edges = this.props.mesh.edges;
+        const bb = this.props.mesh.getBoundingBox();
+        console.log(vertices);
+        console.log(edges);
+        console.log(bb);
+
+        // var force = d3.forceSimulation(vertices)
+        //                 .force("charge", d3.forceManyBody())
+        //                 .force('center', d3.forceCenter(width / 2, height / 2));
+        // console.log(force);
 
         this.x = d3.scaleLinear().range([0, height]);
         this.y = d3.scaleLinear().range([height, 0]);
@@ -51,19 +61,41 @@ export class HalfEdgeDiagram extends D3Component {
 
         const vertex = svg
             .selectAll("circle")
-            .data(vertices);
+            .data(vertices)
+            .enter().append("g");
+            // .attr("class","node");
         vertex
-            .enter()
             .append("circle")
-                .attr("r", 4)
-                .attr("cx", (d) => this.x(d.getPosition().x()))
-                .attr("cy", (d) => this.y(d.getPosition().y()));
+            .attr("r", 4)
+            .attr("cx", (d) => this.x(d.getPosition().x()))
+            .attr("cy", (d) => this.y(d.getPosition().y()))
+            .on('mouseover', function(){
+                d3.select(this)
+                  .style('stroke', 'orange')
+                  .attr("r", 6)
+                  .style('stroke-width', 5);
+              })
+            .on('mouseout', function(){
+                d3.select(this)
+                  .style('stroke', 'none')
+                  .attr("r", 4);
+              });
+        
+        vertex
+            .append("text")
+                .attr("x", (d) => this.x(d.getPosition().x())+ d.getLabelPosition(bb).x())
+                .attr("y", (d) => this.y(d.getPosition().y())+ d.getLabelPosition(bb).y())
+                // .attr("text-anchor","start")
+                // .text((d) => console.log(this.props.mesh.getBoundingBox()));
+                .text((d) => "v"+d.getId())
+                .style("font-size", "1.5em");
 
         const edge = svg
             .selectAll("line")
-            .data(edges);
+            .data(edges)
+            .enter().append("g");
         edge
-            .enter()
+            
             .append("line")
                 .attr("x1", (e) => this.x(this.getArrowStartX(e)))
                 .attr("y1", (e) => this.y(this.getArrowStartY(e)))
@@ -72,6 +104,12 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("stroke-width", 1)
                 .attr("marker-end", "url(#head)")
                 .attr("stroke", "black");
+
+        edge
+            .append("text")
+                .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
+                .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
+                .text((e) => "e"+e.getId());
     }
 
     update(props, oldProps) {
@@ -96,8 +134,10 @@ export class HalfEdgeDiagram extends D3Component {
         svg.selectAll("text").remove();
         const vertex = svg
             .selectAll("circle")
-            .data(vertices);
+            .data(vertices)
+            .enter().append("g");
         // Add vertices as needed
+        
         vertex.enter().append("circle")
             .attr("r", 4)
             .attr("cx", (d) => this.x(d.getPosition().x()))
@@ -191,5 +231,17 @@ export class HalfEdgeDiagram extends D3Component {
     }
     getArrowEndY(e) {
         return this.getArrow(e)[1].y();
+    }
+
+    getArrowMiddleX(e) {
+        return (this.getArrow(e)[0].x() + this.getArrow(e)[1].x()) / 2
+    }
+
+    getArrowMiddleY(e) {
+        return (this.getArrow(e)[0].y() + this.getArrow(e)[1].y()) / 2
+    }
+
+    getVertexID(e) {
+        return this.getVertexID;
     }
 }
