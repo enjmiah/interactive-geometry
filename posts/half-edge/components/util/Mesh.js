@@ -220,12 +220,12 @@ export class Mesh {
     getBoundingBox() {
         if (this.vertices.length == 0) return;
 
-        var min = this.vertices[0].getPos().copy();
-        var max = this.vertices[0].getPos().copy();
+        var min = this.vertices[0].getPosition().copy();
+        var max = this.vertices[0].getPosition().copy();
 
         for (var i = 0; i < this.vertices.length; i++) {
             for (var j = 0; j < 3; j++) {
-                var pos = this.vertices[i].getPos();
+                var pos = this.vertices[i].getPosition();
 
                 if (min.value[j] > pos.value[j]) {
                     min.value[j] = pos.value[j];
