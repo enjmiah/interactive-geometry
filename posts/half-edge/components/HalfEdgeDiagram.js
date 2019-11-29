@@ -55,7 +55,7 @@ export class HalfEdgeDiagram extends D3Component {
         console.log(vertices);
         console.log(edges);
         console.log(bb);
-
+        
         // var force = d3.forceSimulation(vertices)
         //                 .force("charge", d3.forceManyBody())
         //                 .force('center', d3.forceCenter(width / 2, height / 2));
@@ -73,19 +73,20 @@ export class HalfEdgeDiagram extends D3Component {
             // .attr("class","node");
         vertex
             .append("circle")
-            .attr("r", 4)
+            .attr("r", 5)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
             .on('mouseover', function(){
-                d3.select(this)
-                  .style('stroke', 'orange')
-                  .attr("r", 6)
-                  .style('stroke-width', 5);
+                d3.select(this).transition()
+                  .duration(animDuration/2)
+                  .style('fill', 'orange')
+                  .attr("r",8);
               })
             .on('mouseout', function(){
-                d3.select(this)
-                  .style('stroke', 'none')
-                  .attr("r", 4);
+                d3.select(this).transition()
+                  .duration(animDuration/2)
+                  .style('fill','black')
+                  .attr("r", 5);
               });
         
         vertex
@@ -163,15 +164,16 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
             .on('mouseover', function(){
-                d3.select(this)
-                  .style('stroke', 'orange')
-                  .attr("r", 6)
-                  .style('stroke-width', 5);
+                d3.select(this).transition()
+                  .duration(animDuration/2)
+                  .style('fill', 'orange')
+                  .attr("r",8);
               })
             .on('mouseout', function(){
-                d3.select(this)
-                  .style('stroke', 'none')
-                  .attr("r", 4);
+                d3.select(this).transition()
+                  .duration(animDuration/2)
+                  .style('fill','black')
+                  .attr("r", 5);
               })
               .merge(vertex);
 

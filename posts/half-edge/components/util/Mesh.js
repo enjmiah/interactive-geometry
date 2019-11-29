@@ -30,6 +30,8 @@ export class Vertex {
 
     setHalfEdge(e) { this.he = e; }
 
+    //Offset the label based on the position of vertex
+    //TODO: Implement a better algorthim? This does not cover all cases.
     getLabelPosition(boundingBox) {
         var min_x = boundingBox[0].x();
         var min_y = boundingBox[0].y();
