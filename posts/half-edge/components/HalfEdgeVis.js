@@ -9,6 +9,7 @@ class HalfEdgeVis extends React.Component {
         super(props);
 
         this.handleOBJChange = this.handleOBJChange.bind(this);
+        this.handleHoverChange = this.handleHoverChange.bind(this);
 
         this.state = {
             obj: `# Enter your mesh definition in OBJ format below...
@@ -27,6 +28,7 @@ f 4 6 7
 f 4 7 5
 `,
             mesh: null,
+            hover: "",
         };
 
         this.reloadMesh(this.state.obj);
@@ -40,13 +42,17 @@ f 4 7 5
         this.reloadMesh(text);
     }
 
+    handleHoverChange(vertex) {
+        this.setState({hover: vertex});
+    }
+
     render() {
         const { hasError, idyll, updateProps, ...props } = this.props;
         return (
             <div className="half-edge-vis">
                 <OBJEditor obj={this.state.obj} onOBJChange={this.handleOBJChange} />
-                <HalfEdgeDiagram mesh={this.state.mesh} />
-                <HalfEdgeTables mesh={this.state.mesh} />
+                <HalfEdgeDiagram mesh={this.state.mesh} hover={this.state.hover} onHoverChange={this.handleHoverChange}/>
+                <HalfEdgeTables mesh={this.state.mesh} hover={this.state.hover} onHoverChange={this.handleHoverChange}/>
             </div>
         );
     }

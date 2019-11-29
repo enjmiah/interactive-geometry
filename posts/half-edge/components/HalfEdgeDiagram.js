@@ -12,19 +12,14 @@ const height = canvasHeight - margin.top - margin.bottom;
 
 export class HalfEdgeDiagram extends D3Component {
 
-    // constructor(props) {
-    //     super(props);
-    //     this.onChange = this.onChange.bind(this);
-    //     this.state = {rowSelected: ''};
-    // }    
-
 
     initialize(node, props) {
         if (typeof props.mesh === "string") {
             console.error(props.mesh);
             return;
         }
-
+        console.log(node);
+        console.log(props);
         let svg = (this.svg = d3.select(node).append('svg'));
         svg = svg
             .attr("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`)
@@ -52,10 +47,11 @@ export class HalfEdgeDiagram extends D3Component {
         const vertices = this.props.mesh.vertices;
         const edges = this.props.mesh.edges;
         const bb = this.props.mesh.getBoundingBox();
-        console.log(vertices);
-        console.log(edges);
-        console.log(bb);
-        
+        console.log(this.props.hover);
+        // console.log(vertices);
+        // console.log(edges);
+        // console.log(bb);
+
         // var force = d3.forceSimulation(vertices)
         //                 .force("charge", d3.forceManyBody())
         //                 .force('center', d3.forceCenter(width / 2, height / 2));
@@ -76,17 +72,18 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("r", 5)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
-            .on('mouseover', function(){
-                d3.select(this).transition()
-                  .duration(animDuration/2)
+            .attr("id", (d) => d.getId())
+            .on('mouseover', function(d){
+                d3.select(this)
                   .style('fill', 'orange')
                   .attr("r",8);
+                  props.onHoverChange(d.id);
               })
             .on('mouseout', function(){
-                d3.select(this).transition()
-                  .duration(animDuration/2)
+                d3.select(this)
                   .style('fill','black')
                   .attr("r", 5);
+                  props.onHoverChange("");
               });
         
         vertex
@@ -119,6 +116,14 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
                 .text((e) => "e"+e.getId());
     }
+
+    // render() {
+    //     const { hasError, idyll, updateProps, ...props } = this.props;
+    //     return (
+    //         <div id="display">
+    //         </div>
+    //     );
+    // }
 
     update(props, oldProps) {
         
@@ -163,18 +168,18 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("r", 4)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
-            .on('mouseover', function(){
-                d3.select(this).transition()
-                  .duration(animDuration/2)
-                  .style('fill', 'orange')
-                  .attr("r",8);
-              })
-            .on('mouseout', function(){
-                d3.select(this).transition()
-                  .duration(animDuration/2)
-                  .style('fill','black')
-                  .attr("r", 5);
-              })
+            // .on('mouseover', function(){
+            //     d3.select(this).transition()
+            //       .duration(animDuration/2)
+            //       .style('fill', 'orange')
+            //       .attr("r",8);
+            //   })
+            // .on('mouseout', function(){
+            //     d3.select(this).transition()
+            //       .duration(animDuration/2)
+            //       .style('fill','black')
+            //       .attr("r", 5);
+            //   })
               .merge(vertex);
 
               label

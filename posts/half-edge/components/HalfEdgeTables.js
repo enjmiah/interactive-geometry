@@ -1,6 +1,7 @@
 const React = require('react');
 
 function VertexTable(props) {
+    console.log("Current hovered vertex: "+props.hover);
     const rows = props.mesh.vertices.map((v) => {
         const p = v.getPosition();
         const id = v.getId();
@@ -10,8 +11,15 @@ function VertexTable(props) {
             (v.getHalfEdge() !== undefined
              ? <span><em>e</em><sub>{v.getHalfEdge().getId()}</sub></span>
              : <span>∅</span>);
-        return <tr key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
+        if(props.hover == "" || id != props.hover) {
+            return <tr key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
+        } else {
+            return <tr bgcolor="FFA500" key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
+        }
     });
+
+    console.log(rows);
+    console.log(props.hover);
     return (
         <table className="vertices">
             <thead>
@@ -89,9 +97,9 @@ export class HalfEdgeTables extends React.Component {
         return (
           <div className="half-edge-tables">
             <h4>Records</h4>
-            <VertexTable mesh={this.props.mesh} />
-            <FaceTable mesh={this.props.mesh} />
-            <HalfEdgeTable mesh={this.props.mesh} />
+            <VertexTable mesh={this.props.mesh} hover={this.props.hover} />
+            <FaceTable mesh={this.props.mesh} hover={this.props.hover}/>
+            <HalfEdgeTable mesh={this.props.mesh} hover={this.props.hover}/>
           </div>
         );
     }
