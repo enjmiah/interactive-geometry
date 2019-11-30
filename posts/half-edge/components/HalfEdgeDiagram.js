@@ -72,17 +72,15 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("r", 5)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
-            .attr("id", (d) => d.getId())
+            .attr("id", (d) => "circle"+d.getId())
             .on('mouseover', function(d){
                 d3.select(this)
-                  .style('fill', 'orange')
-                  .attr("r",8);
+                  .style('fill', 'orange');
                   props.onHoverChange(d.id);
               })
             .on('mouseout', function(){
                 d3.select(this)
-                  .style('fill','black')
-                  .attr("r", 5);
+                  .style('fill','black');
                   props.onHoverChange("");
               });
         
@@ -126,7 +124,7 @@ export class HalfEdgeDiagram extends D3Component {
     // }
 
     update(props, oldProps) {
-        
+
         if (typeof props.mesh === "string") {
             const svg = this.svg.select("g");
             svg.selectAll("*").remove();
@@ -168,6 +166,7 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("r", 4)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
+            .attr("id", (d) => "circle"+d.getId())
             // .on('mouseover', function(){
             //     d3.select(this).transition()
             //       .duration(animDuration/2)
@@ -181,6 +180,7 @@ export class HalfEdgeDiagram extends D3Component {
             //       .attr("r", 5);
             //   })
               .merge(vertex);
+              
 
               label
               .enter()
@@ -248,6 +248,15 @@ export class HalfEdgeDiagram extends D3Component {
         //     .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
         //     .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
         //     .text((e) => "e"+e.getId());
+
+        //Highlight vertex based on hovered row
+        if(props.hover != "") {
+            d3.select('#circle'+props.hover)
+                .style('fill', 'orange');
+        } else {
+            d3.selectAll('circle')
+                .style('fill', 'black');
+        }
     }
 
     getArrow(e) {

@@ -1,7 +1,9 @@
 const React = require('react');
 
 function VertexTable(props) {
-    console.log("Current hovered vertex: "+props.hover);
+    // console.log("Current hovered vertex: "+props.hover);
+    // console.log(props);
+    //TOFIX: Row with key id 0 is not being highlighted. WHY?????
     const rows = props.mesh.vertices.map((v) => {
         const p = v.getPosition();
         const id = v.getId();
@@ -12,14 +14,14 @@ function VertexTable(props) {
              ? <span><em>e</em><sub>{v.getHalfEdge().getId()}</sub></span>
              : <span>∅</span>);
         if(props.hover == "" || id != props.hover) {
-            return <tr key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
+            return <tr value={id} key={id} onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
         } else {
-            return <tr bgcolor="FFA500" key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
+            return <tr onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props, v)} value={id} bgcolor="FFA500" key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
         }
     });
 
-    console.log(rows);
-    console.log(props.hover);
+    // console.log(rows);
+    // console.log(props.hover);
     return (
         <table className="vertices">
             <thead>
@@ -81,9 +83,20 @@ function HalfEdgeTable(props) {
 }
 
 export class HalfEdgeTables extends React.Component {
-    constructor(props) { super(props); }
+    constructor(props) { 
+        super(props);
+        this.onChange = this.onChange.bind(this);
+        this.onChangeOut = this.onChangeOut.bind(this);
+    }
 
-    onChange(e) {}
+    onChange(d) {
+        this.props.onHoverChange(d.getId());
+    }
+
+    onChangeOut(d) {
+        this.props.onHoverChange("");
+    }
+
 
     render() {
         const { hasError, idyll, updateProps, ...props } = this.props;
@@ -97,7 +110,7 @@ export class HalfEdgeTables extends React.Component {
         return (
           <div className="half-edge-tables">
             <h4>Records</h4>
-            <VertexTable mesh={this.props.mesh} hover={this.props.hover} />
+            <VertexTable mesh={this.props.mesh} hover={this.props.hover} onChange={this.onChange} onChangeOut={this.onChangeOut}/>
             <FaceTable mesh={this.props.mesh} hover={this.props.hover}/>
             <HalfEdgeTable mesh={this.props.mesh} hover={this.props.hover}/>
           </div>
