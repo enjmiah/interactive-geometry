@@ -48,6 +48,7 @@ export class HalfEdgeDiagram extends D3Component {
         const edges = this.props.mesh.edges;
         const bb = this.props.mesh.getBoundingBox();
         console.log(this.props.hover);
+        console.log(edges);
         // console.log(vertices);
         // console.log(edges);
         // console.log(bb);
@@ -91,7 +92,8 @@ export class HalfEdgeDiagram extends D3Component {
                 // .attr("text-anchor","start")
                 // .text((d) => console.log(this.props.mesh.getBoundingBox()));
                 .text((d) => "v"+d.getId())
-                .style("font-size", "1.5em");
+                .style("font-size", "1.5em")
+                .attr("class", "node");
 
         const edge = svg
             .selectAll("line")
@@ -112,7 +114,9 @@ export class HalfEdgeDiagram extends D3Component {
             .append("text")
                 .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
                 .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
-                .text((e) => "e"+e.getId());
+                .text((e) => "e"+e.getId())
+                .attr('class', 'edges');
+
     }
 
     // render() {
@@ -191,6 +195,7 @@ export class HalfEdgeDiagram extends D3Component {
                   // .text((d) => console.log(this.props.mesh.getBoundingBox()));
                   .text((d) => "v"+d.getId())
                   .style("font-size", "1.5em")
+                  .attr('class','node')
                   .merge(label);
         // Remove excess vertices
         vertex.exit().remove();
@@ -202,7 +207,7 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()));
         
-        label.transition()
+        d3.selectAll('.node').transition()
               .duration(animDuration)
               .attr("x", (d) => this.x(d.getPosition().x())+ d.getLabelPosition(bb).x())
               .attr("y", (d) => this.y(d.getPosition().y())+ d.getLabelPosition(bb).y())
@@ -211,9 +216,9 @@ export class HalfEdgeDiagram extends D3Component {
         const edge = svg
             .selectAll("line")
             .data(edges);
-        // const label2 = svg 
-        //       .selectAll("text")
-        //       .data(edges);
+        const label2 = svg 
+              .selectAll("text")
+              .data(edges);
         edge.enter().append("line")
             .attr("x1", (e) => this.x(this.getArrowStartX(e)))
             .attr("y1", (e) => this.y(this.getArrowStartY(e)))
@@ -224,11 +229,12 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("stroke", "black")
             .merge(edge);
         
-        // label2.enter().append("text")
-        //     .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-        //     .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
-        //     .text((e) => "e"+e.getId())
-        //     .merge(label2);
+        label2.enter().append("text")
+            .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
+            .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
+            .text((e) => "e"+e.getId())
+            .attr('class', 'edges')
+            .merge(label2);
 
         edge.exit().remove();
         // label2.exit().remove();
@@ -243,12 +249,14 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("marker-end", "url(#head)")
             .attr("stroke", "black");
 
-        // label2.transition()
-        //     .duration(animDuration)
-        //     .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-        //     .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
-        //     .text((e) => "e"+e.getId());
+        d3.selectAll('.edges').transition()
+            .duration(animDuration)
+            .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
+            .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
+            .text((e) => "e"+e.getId());
 
+        console.log(d3.selectAll('.edges'));
+        console.log(d3.selectAll('text'));
         //Highlight vertex based on hovered row
         if(props.hover != "") {
             d3.select('#circle'+props.hover)
