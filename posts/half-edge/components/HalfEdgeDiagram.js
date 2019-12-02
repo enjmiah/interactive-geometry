@@ -135,7 +135,7 @@ export class HalfEdgeDiagram extends D3Component {
             .selectAll("circle")
             .data(vertices);
         const label = svg
-            .selectAll("text")
+            .selectAll(".node")
             .data(vertices);
 
         // Add vertices as needed
@@ -181,7 +181,7 @@ export class HalfEdgeDiagram extends D3Component {
             .selectAll("line")
             .data(edges);
         const label2 = svg 
-              .selectAll("text")
+              .selectAll(".edges")
               .data(edges);
         edge.enter().append("line")
             .attr("x1", (e) => this.x(this.getArrowStartX(e)))
