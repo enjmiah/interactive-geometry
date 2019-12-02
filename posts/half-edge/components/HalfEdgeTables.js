@@ -13,7 +13,7 @@ function VertexTable(props) {
             (v.getHalfEdge() !== undefined
              ? <span><em>e</em><sub>{v.getHalfEdge().getId()}</sub></span>
              : <span>∅</span>);
-        if(props.hover == "" || id != props.hover) {
+        if(props.hover == null || id != props.hover) {
             return <tr value={id} key={id} onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
         } else {
             return <tr onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props, v)} value={id} bgcolor="FFA500" key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;

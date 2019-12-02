@@ -28,7 +28,7 @@ f 4 6 7
 f 4 7 5
 `,
             mesh: null,
-            hover: "",
+            hover: null,
         };
 
         this.reloadMesh(this.state.obj);

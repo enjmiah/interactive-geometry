@@ -47,16 +47,9 @@ export class HalfEdgeDiagram extends D3Component {
         const vertices = this.props.mesh.vertices;
         const edges = this.props.mesh.edges;
         const bb = this.props.mesh.getBoundingBox();
-        console.log(this.props.hover);
+        console.log(vertices);
         console.log(edges);
-        // console.log(vertices);
-        // console.log(edges);
-        // console.log(bb);
 
-        // var force = d3.forceSimulation(vertices)
-        //                 .force("charge", d3.forceManyBody())
-        //                 .force('center', d3.forceCenter(width / 2, height / 2));
-        // console.log(force);
 
         this.x = d3.scaleLinear().range([0, height]);
         this.y = d3.scaleLinear().range([height, 0]);
@@ -67,7 +60,6 @@ export class HalfEdgeDiagram extends D3Component {
             .selectAll("circle")
             .data(vertices)
             .enter().append("g");
-            // .attr("class","node");
         vertex
             .append("circle")
             .attr("r", 5)
@@ -82,15 +74,13 @@ export class HalfEdgeDiagram extends D3Component {
             .on('mouseout', function(){
                 d3.select(this)
                   .style('fill','black');
-                  props.onHoverChange("");
+                  props.onHoverChange(null);
               });
         
         vertex
             .append("text")
                 .attr("x", (d) => this.x(d.getPosition().x())+ d.getLabelPosition(bb).x())
                 .attr("y", (d) => this.y(d.getPosition().y())+ d.getLabelPosition(bb).y())
-                // .attr("text-anchor","start")
-                // .text((d) => console.log(this.props.mesh.getBoundingBox()));
                 .text((d) => "v"+d.getId())
                 .style("font-size", "1.5em")
                 .attr("class", "node");
@@ -118,14 +108,6 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr('class', 'edges');
 
     }
-
-    // render() {
-    //     const { hasError, idyll, updateProps, ...props } = this.props;
-    //     return (
-    //         <div id="display">
-    //         </div>
-    //     );
-    // }
 
     update(props, oldProps) {
 
@@ -157,12 +139,6 @@ export class HalfEdgeDiagram extends D3Component {
             .data(vertices);
 
         // Add vertices as needed
-        
-        // vertex.enter().append("circle")
-        //     .attr("r", 4)
-        //     .attr("cx", (d) => this.x(d.getPosition().x()))
-        //     .attr("cy", (d) => this.y(d.getPosition().y()))
-        //     .merge(vertex);
 
             vertex
             .enter()
@@ -171,18 +147,6 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
             .attr("id", (d) => "circle"+d.getId())
-            // .on('mouseover', function(){
-            //     d3.select(this).transition()
-            //       .duration(animDuration/2)
-            //       .style('fill', 'orange')
-            //       .attr("r",8);
-            //   })
-            // .on('mouseout', function(){
-            //     d3.select(this).transition()
-            //       .duration(animDuration/2)
-            //       .style('fill','black')
-            //       .attr("r", 5);
-            //   })
               .merge(vertex);
               
 
@@ -255,10 +219,8 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
             .text((e) => "e"+e.getId());
 
-        console.log(d3.selectAll('.edges'));
-        console.log(d3.selectAll('text'));
         //Highlight vertex based on hovered row
-        if(props.hover != "") {
+        if(props.hover != null) {
             d3.select('#circle'+props.hover)
                 .style('fill', 'orange');
         } else {
