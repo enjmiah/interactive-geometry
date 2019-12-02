@@ -1,9 +1,8 @@
+import { throws } from 'assert';
+
 const React = require('react');
 
 function VertexTable(props) {
-    // console.log("Current hovered vertex: "+props.hover);
-    // console.log(props);
-    //TOFIX: Row with key id 0 is not being highlighted. WHY?????
     const rows = props.mesh.vertices.map((v) => {
         const p = v.getPosition();
         const id = v.getId();
@@ -13,11 +12,21 @@ function VertexTable(props) {
             (v.getHalfEdge() !== undefined
              ? <span><em>e</em><sub>{v.getHalfEdge().getId()}</sub></span>
              : <span>∅</span>);
-        if(props.hover == null || id != props.hover) {
-            return <tr value={id} key={id} onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
-        } else {
-            return <tr onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props, v)} value={id} bgcolor="FFA500" key={id}><td>{vertex}</td><td>{coordinate}</td><td>{edge}</td></tr>;
+        const edgeId = v.getHalfEdge().getId();
+        // console.log(props.ieHover);
+        if((props.hover == null || id != props.hover) && (props.ieHover == null || edgeId != props.ieHover)) {
+            return <tr key={id}><td  onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)}>{vertex}</td><td>{coordinate}</td><td onMouseOver={props.onChangeEdge.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)}>{edge}</td></tr>;
+        } else if (props.hover != null && id == props.hover) {
+            return <tr key={id}><td onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props, v)} bgcolor="FFA500">{vertex}</td><td>{coordinate}</td><td onMouseOver={props.onChangeEdge.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)}>{edge}</td></tr>;
+        } else if (props.ieHover != null && edgeId == props.ieHover) {
+            return <tr key={id}><td onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props, v)}>{vertex}</td><td>{coordinate}</td><td onMouseOver={props.onChangeEdge.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)} bgcolor="FFA500">{edge}</td></tr>;
         }
+
+        // if(props.hover == null || id != props.hover) {
+
+        // } else if (props.ieHover == null || ) {
+
+        // }
     });
 
     // console.log(rows);
@@ -87,6 +96,7 @@ export class HalfEdgeTables extends React.Component {
         super(props);
         this.onChange = this.onChange.bind(this);
         this.onChangeOut = this.onChangeOut.bind(this);
+        this.onChangeEdge = this.onChangeEdge.bind(this);
     }
 
     onChange(d) {
@@ -95,6 +105,11 @@ export class HalfEdgeTables extends React.Component {
 
     onChangeOut(d) {
         this.props.onHoverChange(null);
+        this.props.onEdgeHoverChange(null);
+    }
+
+    onChangeEdge(d) {
+        this.props.onEdgeHoverChange(d.getHalfEdge().getId());
     }
 
 
@@ -110,7 +125,7 @@ export class HalfEdgeTables extends React.Component {
         return (
           <div className="half-edge-tables">
             <h4>Records</h4>
-            <VertexTable mesh={this.props.mesh} hover={this.props.hover} onChange={this.onChange} onChangeOut={this.onChangeOut}/>
+            <VertexTable mesh={this.props.mesh} hover={this.props.hover} ieHover={this.props.ieHover} onChange={this.onChange} onChangeOut={this.onChangeOut} onChangeEdge={this.onChangeEdge}/>
             <FaceTable mesh={this.props.mesh} hover={this.props.hover}/>
             <HalfEdgeTable mesh={this.props.mesh} hover={this.props.hover}/>
           </div>

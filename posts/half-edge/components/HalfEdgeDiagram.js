@@ -89,6 +89,8 @@ export class HalfEdgeDiagram extends D3Component {
             .selectAll("line")
             .data(edges)
             .enter().append("g");
+        
+        //TODO: CHANGE COLOR OF ARROWHEAD ON HOVER
         edge
             
             .append("line")
@@ -98,7 +100,21 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("y2", (e) => this.y(this.getArrowEndY(e)))
                 .attr("stroke-width", 1)
                 .attr("marker-end", "url(#head)")
-                .attr("stroke", "black");
+                .attr("stroke", "black")
+                .attr('id', (e) => "edge"+e.getId())
+                .on('mouseover', function(d){
+                    d3.select(this)
+                      .attr('stroke-width', 1.3)
+                      .attr('stroke', 'orange');
+                      props.onEdgeHoverChange(d.id);
+
+                  })
+                .on('mouseout', function(){
+                    d3.select(this)
+                      .attr('stroke-width', 1)
+                      .attr('stroke','black');
+                      props.onEdgeHoverChange(null);
+                  });
 
         edge
             .append("text")
@@ -188,9 +204,10 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("y1", (e) => this.y(this.getArrowStartY(e)))
             .attr("x2", (e) => this.x(this.getArrowEndX(e)))
             .attr("y2", (e) => this.y(this.getArrowEndY(e)))
-            .attr("stroke-width", 1)
-            .attr("marker-end", "url(#head)")
-            .attr("stroke", "black")
+            .attr('id', (e) => "edge"+e.getId())
+            // .attr("stroke-width", 1)
+            // .attr("marker-end", "url(#head)")
+            // .attr("stroke", "black")
             .merge(edge);
         
         label2.enter().append("text")
@@ -209,9 +226,9 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("y1", (e) => this.y(this.getArrowStartY(e)))
             .attr("x2", (e) => this.x(this.getArrowEndX(e)))
             .attr("y2", (e) => this.y(this.getArrowEndY(e)))
-            .attr("stroke-width", 1)
-            .attr("marker-end", "url(#head)")
-            .attr("stroke", "black");
+            // .attr("stroke-width", 1)
+            // .attr("marker-end", "url(#head)")
+            // .attr("stroke", "black");
 
         d3.selectAll('.edges').transition()
             .duration(animDuration)
@@ -226,6 +243,17 @@ export class HalfEdgeDiagram extends D3Component {
         } else {
             d3.selectAll('circle')
                 .style('fill', 'black');
+        }
+
+        //Highlight incidentEdge based on hovered row
+        if(props.ieHover != null) {
+            d3.select('#edge'+props.ieHover)
+            .attr('stroke-width', 1.3)
+            .attr('stroke', 'orange');
+        } else {
+            d3.selectAll('line')
+            .attr('stroke-width', 1)
+            .attr('stroke', 'black');
         }
     }
 
