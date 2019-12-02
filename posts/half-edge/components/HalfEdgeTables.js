@@ -13,7 +13,6 @@ function VertexTable(props) {
              ? <span><em>e</em><sub>{v.getHalfEdge().getId()}</sub></span>
              : <span>∅</span>);
         const edgeId = v.getHalfEdge().getId();
-        // console.log(props.ieHover);
         if((props.hover == null || id != props.hover) && (props.ieHover == null || edgeId != props.ieHover)) {
             return <tr key={id}><td  onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)}>{vertex}</td><td>{coordinate}</td><td onMouseOver={props.onChangeEdge.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)}>{edge}</td></tr>;
         } else if (props.hover != null && id == props.hover) {
@@ -21,16 +20,8 @@ function VertexTable(props) {
         } else if (props.ieHover != null && edgeId == props.ieHover) {
             return <tr key={id}><td onMouseOver={props.onChange.bind(props,v)} onMouseOut={props.onChangeOut.bind(props, v)}>{vertex}</td><td>{coordinate}</td><td onMouseOver={props.onChangeEdge.bind(props,v)} onMouseOut={props.onChangeOut.bind(props,v)} bgcolor="FFA500">{edge}</td></tr>;
         }
-
-        // if(props.hover == null || id != props.hover) {
-
-        // } else if (props.ieHover == null || ) {
-
-        // }
     });
 
-    // console.log(rows);
-    // console.log(props.hover);
     return (
         <table className="vertices">
             <thead>
@@ -46,6 +37,19 @@ function VertexTable(props) {
 }
 
 function FaceTable(props) {
+    const rows = props.mesh.faces.map((f) => {
+        const id = f.getId();
+        const face = <span><em>f</em><sub>{id}</sub></span>;
+        const edges = f.getHalfEdge();
+        const edge =
+            (f.getHalfEdge() !== undefined
+             ? <span><em>e</em><sub>{f.getHalfEdge().getId()}</sub></span>
+             : <span>∅</span>);
+        
+        return <tr key={id}><td>{face}</td><td>{edge}</td></tr>;
+
+
+    });
     return (
         <table className="faces">
             <thead>
@@ -54,17 +58,35 @@ function FaceTable(props) {
                     <th>Half-edge</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>todo</td>
-                    <td>todo</td>
-                </tr>
-            </tbody>
+            <tbody>{rows}</tbody>
         </table>
     );
 }
 
 function HalfEdgeTable(props) {
+    const rows = props.mesh.edges.map((e) => {
+        const id = e.getId();
+        const edge = <span><em>e</em><sub>{id}</sub></span>;
+        const origin = <span><em>v</em><sub>{e.getOrigin().getId()}</sub></span>
+        const twin =
+        (e.getTwin().getId() !== undefined
+         ? <span><em>e</em><sub>{e.getTwin().getId()}</sub></span>
+         : <span>∅</span>);
+         const face =
+        (e.getFace() !== undefined
+         ? <span><em>f</em><sub>{e.getFace().getId()}</sub></span>
+         : <span>∅</span>);
+         const next =
+        (e.getNext() !== undefined
+         ? <span><em>e</em><sub>{e.getNext().getId()}</sub></span>
+         : <span>∅</span>);
+         const prev =
+        (e.getPrev() !== undefined
+         ? <span><em>e</em><sub>{e.getPrev().getId()}</sub></span>
+         : <span>∅</span>);
+
+    return  <tr key={id}><td>{edge}</td><td>{origin}</td><td>{twin}</td><td>{face}</td><td>{next}</td><td>{prev}</td></tr> ;
+    });
     return (
         <table className="half-edges">
             <thead>
@@ -77,16 +99,7 @@ function HalfEdgeTable(props) {
                     <th>Prev</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>todo</td>
-                    <td>todo</td>
-                    <td>todo</td>
-                    <td>todo</td>
-                    <td>todo</td>
-                    <td>todo</td>
-                </tr>
-            </tbody>
+            <tbody>{rows}</tbody>
         </table>
     );
 }
