@@ -94,7 +94,7 @@ export class HalfEdgeTables extends React.Component {
     }
 
     onChangeOut(d) {
-        this.props.onHoverChange("");
+        this.props.onHoverChange(null);
     }
 
 
