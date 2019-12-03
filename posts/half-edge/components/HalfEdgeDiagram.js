@@ -146,7 +146,6 @@ export class HalfEdgeDiagram extends D3Component {
         this.y.domain(d3.extent(vertices, (d) => d.getPosition().y()));
 
         const svg = this.svg.select("g");
-        svg.selectAll("text").remove();
         const vertex = svg
             .selectAll("circle")
             .data(vertices);
@@ -188,10 +187,9 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("cy", (d) => this.y(d.getPosition().y()));
         
         d3.selectAll('.node').transition()
-              .duration(animDuration)
-              .attr("x", (d) => this.x(d.getPosition().x())+ d.getLabelPosition(bb).x())
-              .attr("y", (d) => this.y(d.getPosition().y())+ d.getLabelPosition(bb).y())
-              .text((d) => "v"+d.getId());
+            .duration(animDuration)
+            .attr("x", (d) => this.x(d.getPosition().x()) + d.getLabelPosition(bb).x())
+            .attr("y", (d) => this.y(d.getPosition().y()) + d.getLabelPosition(bb).y());
 
         const edge = svg
             .selectAll("line")
@@ -233,8 +231,7 @@ export class HalfEdgeDiagram extends D3Component {
         d3.selectAll('.edges').transition()
             .duration(animDuration)
             .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-            .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
-            .text((e) => "e"+e.getId());
+            .attr("y", (e) => this.y(this.getArrowMiddleY(e)));
 
         //Highlight vertex based on hovered row
         if(props.hover != null) {
