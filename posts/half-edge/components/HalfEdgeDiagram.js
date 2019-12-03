@@ -12,7 +12,6 @@ const height = canvasHeight - margin.top - margin.bottom;
 
 export class HalfEdgeDiagram extends D3Component {
 
-
     initialize(node, props) {
         if (typeof props.mesh === "string") {
             console.error(props.mesh);
@@ -41,10 +40,8 @@ export class HalfEdgeDiagram extends D3Component {
             .append("g")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-
         const vertices = this.props.mesh.vertices;
         const edges = this.props.mesh.edges;
-        const bb = this.props.mesh.getBoundingBox();
 
         this.x = d3.scaleLinear().range([0, height]);
         this.y = d3.scaleLinear().range([height, 0]);
@@ -74,8 +71,8 @@ export class HalfEdgeDiagram extends D3Component {
 
         vertex
             .append("text")
-                .attr("x", (d) => this.x(d.getPosition().x())+ d.getLabelPosition(bb).x())
-                .attr("y", (d) => this.y(d.getPosition().y())+ d.getLabelPosition(bb).y())
+                .attr("x", (d) => this.x(d.getPosition().x()))
+                .attr("y", (d) => this.y(d.getPosition().y()))
                 .text((d) => "v"+d.getId())
                 .style("font-size", "1.5em")
                 .attr("class", "node");
@@ -101,7 +98,6 @@ export class HalfEdgeDiagram extends D3Component {
                       .attr('stroke-width', 1.3)
                       .attr('stroke', 'orange');
                       props.onEdgeHoverChange(d.id);
-
                   })
                 .on('mouseout', function(){
                     d3.select(this)
@@ -114,9 +110,8 @@ export class HalfEdgeDiagram extends D3Component {
             .append("text")
                 .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
                 .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
-                .text((e) => "e"+e.getId())
-                .attr('class', 'edges');
-
+                .text((e) => "e" + e.getId())
+                .attr('class', 'edge');
     }
 
     update(props, oldProps) {
@@ -133,16 +128,17 @@ export class HalfEdgeDiagram extends D3Component {
 
         const vertices = props.mesh.vertices;
         const edges = props.mesh.edges;
-        const bb = props.mesh.getBoundingBox();
 
         this.x.domain(d3.extent(vertices, (d) => d.getPosition().x()));
         this.y.domain(d3.extent(vertices, (d) => d.getPosition().y()));
 
         const svg = this.svg.select("g");
+        svg.selectAll(".error").remove(); // clear error message
+
         const vertex = svg
             .selectAll("circle")
             .data(vertices);
-        const label = svg
+        const vertex_label = svg
             .selectAll(".node")
             .data(vertices);
 
@@ -156,18 +152,19 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("id", (d) => "circle"+d.getId())
             .merge(vertex);
 
-        label
+        vertex_label
             .enter()
             .append("text")
-                .attr("x", (d) => this.x(d.getPosition().x())+ d.getLabelPosition(bb).x())
-                .attr("y", (d) => this.y(d.getPosition().y())+ d.getLabelPosition(bb).y())
+                .attr("x", (d) => this.x(d.getPosition().x()))
+                .attr("y", (d) => this.y(d.getPosition().y()))
                 .text((d) => "v" + d.getId())
-                .style("font-size", "1.5em")
                 .attr("class", "node")
-                .merge(label);
+                .merge(vertex_label);
+
         // Remove excess vertices
         vertex.exit().remove();
-        label.exit().remove();
+        vertex_label.exit().remove();
+
         // Move vertices to new positions
         vertex.transition()
             .duration(animDuration)
@@ -175,37 +172,37 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()));
 
-        d3.selectAll('.node').transition()
+        vertex_label.transition()
             .duration(animDuration)
-            .attr("x", (d) => this.x(d.getPosition().x()) + d.getLabelPosition(bb).x())
-            .attr("y", (d) => this.y(d.getPosition().y()) + d.getLabelPosition(bb).y());
+            .attr("x", (d) => this.x(d.getPosition().x()))
+            .attr("y", (d) => this.y(d.getPosition().y()));
 
         const edge = svg
             .selectAll("line")
             .data(edges);
-        const label2 = svg
-            .selectAll(".edges")
+        const edge_label = svg
+            .selectAll(".edge")
             .data(edges);
         edge.enter().append("line")
             .attr("x1", (e) => this.x(this.getArrowStartX(e)))
             .attr("y1", (e) => this.y(this.getArrowStartY(e)))
             .attr("x2", (e) => this.x(this.getArrowEndX(e)))
             .attr("y2", (e) => this.y(this.getArrowEndY(e)))
-            .attr('id', (e) => "edge"+e.getId())
-            // .attr("stroke-width", 1)
-            // .attr("marker-end", "url(#head)")
-            // .attr("stroke", "black")
+            .attr('id', (e) => "edge" + e.getId())
+            .attr("stroke-width", 1)
+            .attr("marker-end", "url(#head)")
+            .attr("stroke", "black")
             .merge(edge);
 
-        label2.enter().append("text")
+        edge_label.enter().append("text")
             .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
             .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
-            .text((e) => "e"+e.getId())
-            .attr('class', 'edges')
-            .merge(label2);
+            .text((e) => "e" + e.getId())
+            .attr('class', 'edge')
+            .merge(edge_label);
 
         edge.exit().remove();
-        // label2.exit().remove();
+        edge_label.exit().remove();
 
         edge.transition()
             .duration(animDuration)
@@ -214,7 +211,7 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("x2", (e) => this.x(this.getArrowEndX(e)))
             .attr("y2", (e) => this.y(this.getArrowEndY(e)));
 
-        d3.selectAll('.edges').transition()
+        edge_label.transition()
             .duration(animDuration)
             .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
             .attr("y", (e) => this.y(this.getArrowMiddleY(e)));
@@ -229,7 +226,7 @@ export class HalfEdgeDiagram extends D3Component {
         }
 
         //Highlight incidentEdge based on hovered row
-        if(props.ieHover != null) {
+        if(props.ieHover !== null) {
             d3.select('#edge'+props.ieHover)
             .attr('stroke-width', 1.3)
             .attr('stroke', 'orange');
@@ -319,9 +316,5 @@ export class HalfEdgeDiagram extends D3Component {
 
     getArrowMiddleY(e) {
         return (this.getArrow(e)[0].y() + this.getArrow(e)[1].y()) / 2
-    }
-
-    getVertexID(e) {
-        return this.getVertexID;
     }
 }

@@ -63,8 +63,20 @@ f 4 7 5
         return (
             <div className="half-edge-vis">
                 <OBJEditor obj={this.state.obj} onOBJChange={this.handleOBJChange} />
-                <HalfEdgeDiagram mesh={this.state.mesh} hover={this.state.hover} ieHover={this.state.ieHover} faceHover={this.state.faceHover} onHoverChange={this.handleHoverChange} onEdgeHoverChange={this.handleEdgeHoverChange} onFaceHoverChange={this.handleFaceHoverChange}/>
-                <HalfEdgeTables mesh={this.state.mesh} hover={this.state.hover}  ieHover={this.state.ieHover} faceHover={this.state.faceHover} onHoverChange={this.handleHoverChange} onEdgeHoverChange={this.handleEdgeHoverChange} onFaceHoverChange={this.handleFaceHoverChange}/>
+                <HalfEdgeDiagram mesh={this.state.mesh}
+                                 hover={this.state.hover}
+                                 ieHover={this.state.ieHover}
+                                 faceHover={this.state.faceHover}
+                                 onHoverChange={this.handleHoverChange}
+                                 onEdgeHoverChange={this.handleEdgeHoverChange}
+                                 onFaceHoverChange={this.handleFaceHoverChange} />
+                <HalfEdgeTables mesh={this.state.mesh}
+                                hover={this.state.hover}
+                                ieHover={this.state.ieHover}
+                                faceHover={this.state.faceHover}
+                                onHoverChange={this.handleHoverChange}
+                                onEdgeHoverChange={this.handleEdgeHoverChange}
+                                onFaceHoverChange={this.handleFaceHoverChange} />
             </div>
         );
     }

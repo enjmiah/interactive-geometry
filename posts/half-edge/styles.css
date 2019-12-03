@@ -77,3 +77,13 @@ h4 {
 sub, sup {
   font-size: 0.75em;
 }
+
+td.hover {
+  background-color: orange;
+}
+
+svg .edge, svg .node {
+  /* set anchors to centre of text box */
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
