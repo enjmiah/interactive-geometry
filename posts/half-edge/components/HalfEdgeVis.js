@@ -47,7 +47,6 @@ f 4 7 5
     }
 
     handleHoverChange(vertex) {
-        // console.log(vertex);
         this.setState({hover: vertex});
     }
 
