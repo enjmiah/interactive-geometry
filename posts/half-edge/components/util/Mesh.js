@@ -29,40 +29,6 @@ export class Vertex {
     getHalfEdge() { return this.he; }
 
     setHalfEdge(e) { this.he = e; }
-
-    //Offset the label based on the position of vertex
-    //TODO: Implement a better algorthim? This does not cover all cases.
-    getLabelPosition(boundingBox) {
-        var min_x = boundingBox[0].x();
-        var min_y = boundingBox[0].y();
-
-        var max_x = boundingBox[1].x();
-        var max_y = boundingBox[1].y();
-        
-
-        var x = this.position.x();
-        var y = this.position.y();
-
-        if (x == min_x && y == min_y) {
-            return new Vec3(-10, -10, 0);
-        } else if (x == min_x && y != min_y) {
-            return new Vec3(20, 20, 0);
-        } else if (x != min_x && y == min_y) {
-            return new Vec3(20, -15, 0);
-        } else if (x == max_x && y == max_y) {
-            return new Vec3(10, 10, 0);
-        } else if (x == max_x && y != max_y) {
-            return new Vec3(10, 0, 0);
-        } else if (x != max_x && y == max_y) {
-            return new Vec3(20, 20, 0);
-        } else{
-            return new Vec3(20, 20, 0);
-        }
-    }
-
-    // getLabelPosition(centroid) {
-
-    // }
 }
 
 export class HalfEdge {
@@ -130,6 +96,25 @@ export class Mesh {
             this.addFaceByVerts(v0, v1, v2);
         }
 
+        // Fix boundary half-edges
+        for (let i = 0, len = this.edges.length; i < len; ++i) {
+            const he = this.edges[i];
+            if (he.getTwin() === undefined) {
+                this.addEdge(he.getNext().getOrigin(), he.getOrigin());
+            }
+        }
+        for (const he of this.edges) {
+            if (he.getFace() === undefined) {
+                // Boundary half-edges will be missing next and prev info
+                let next = he.getTwin();
+                do {
+                    next = next.getPrev().getTwin();
+                } while (next.getFace() !== undefined);
+                he.setNext(next);
+                next.setPrev(he);
+            }
+        }
+
         this.edgeMap.clear();
     }
 
@@ -149,35 +134,20 @@ export class Mesh {
 
     addFaceByVerts(v1, v2, v3) {
         const createOrFail = (v1, v2) => {
-            let e = this.findEdge(v1, v2);
-            if (e !== undefined && e.getFace() !== undefined) {
+            if (this.findEdge(v1, v2) !== undefined) {
                 throw Error(`Duplicate half edge between v${v1.getId()} and v${v2.getId()}`);
             }
             return this.addEdge(v1, v2);
-        };
-        const findOrCreate = (v1, v2) => {
-            let e = this.findEdge(v1, v2);
-            if (!e) {
-                e = this.addEdge(v1, v2);
-            }
-            return e;
         };
 
         const e1 = createOrFail(v1, v2);
         const e2 = createOrFail(v2, v3);
         const e3 = createOrFail(v3, v1);
-        const t1 = findOrCreate(v2, v1);
-        const t2 = findOrCreate(v3, v2);
-        const t3 = findOrCreate(v1, v3);
 
-        assert(t1.getTwin() === e1);
-        assert(t2.getTwin() === e2);
-        assert(t3.getTwin() === e3);
-
-        return this._addFaceByHalfEdges(e1, e2, e3, t1, t2, t3);
+        return this._addFaceByHalfEdges(e1, e2, e3);
     }
 
-    _addFaceByHalfEdges(e1, e2, e3, t1, t2, t3) {
+    _addFaceByHalfEdges(e1, e2, e3) {
         // Add the face to the mesh
         const f = this.addFace();
 
@@ -193,21 +163,6 @@ export class Mesh {
         e1.setNext(e2); e2.setPrev(e1);
         e2.setNext(e3); e3.setPrev(e2);
         e3.setNext(e1); e1.setPrev(e3);
-
-        const twins = [t1, t2, t3];
-        for (let i = 0; i < twins.length; ++i) {
-            // Boundary half-edges will be missing next and prev info
-            const he = twins[i];
-            if (he.getFace() === undefined) {
-                assert(he.getNext() === undefined);
-                let next = he.getTwin();
-                while (next.getFace() !== undefined) {
-                    next = next.getPrev().getTwin();
-                }
-                he.setNext(next);
-                next.setPrev(he);
-            }
-        }
 
         return f;
     }
