@@ -11,6 +11,7 @@ class HalfEdgeVis extends React.Component {
         this.handleOBJChange = this.handleOBJChange.bind(this);
         this.handleHoverChange = this.handleHoverChange.bind(this);
         this.handleEdgeHoverChange = this.handleEdgeHoverChange.bind(this);
+        this.handleFaceHoverChange = this.handleFaceHoverChange.bind(this);
 
         this.state = {
             obj: `# Enter your mesh definition in OBJ format below...
@@ -31,6 +32,7 @@ f 4 7 5
             mesh: null,
             hover: null,
             ieHover: null,
+            faceHover: null,
         };
 
         this.reloadMesh(this.state.obj);
@@ -53,13 +55,17 @@ f 4 7 5
         this.setState({ieHover: edge});
     }
 
+    handleFaceHoverChange(face) {
+        this.setState({faceHover: face});
+    }
+
     render() {
         const { hasError, idyll, updateProps, ...props } = this.props;
         return (
             <div className="half-edge-vis">
                 <OBJEditor obj={this.state.obj} onOBJChange={this.handleOBJChange} />
-                <HalfEdgeDiagram mesh={this.state.mesh} hover={this.state.hover} ieHover={this.state.ieHover} onHoverChange={this.handleHoverChange} onEdgeHoverChange={this.handleEdgeHoverChange}/>
-                <HalfEdgeTables mesh={this.state.mesh} hover={this.state.hover}  ieHover={this.state.ieHover} onHoverChange={this.handleHoverChange} onEdgeHoverChange={this.handleEdgeHoverChange}/>
+                <HalfEdgeDiagram mesh={this.state.mesh} hover={this.state.hover} ieHover={this.state.ieHover} faceHover={this.state.faceHover} onHoverChange={this.handleHoverChange} onEdgeHoverChange={this.handleEdgeHoverChange} onFaceHoverChange={this.handleFaceHoverChange}/>
+                <HalfEdgeTables mesh={this.state.mesh} hover={this.state.hover}  ieHover={this.state.ieHover} faceHover={this.state.faceHover} onHoverChange={this.handleHoverChange} onEdgeHoverChange={this.handleEdgeHoverChange} onFaceHoverChange={this.handleFaceHoverChange}/>
             </div>
         );
     }

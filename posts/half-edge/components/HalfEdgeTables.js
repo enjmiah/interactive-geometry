@@ -41,13 +41,17 @@ function FaceTable(props) {
     const rows = props.mesh.faces.map((f) => {
         const id = f.getId();
         const face = <span><em>f</em><sub>{id}</sub></span>;
-        const edges = f.getHalfEdge();
         const edge =
             (f.getHalfEdge() !== undefined
              ? <span><em>e</em><sub>{f.getHalfEdge().getId()}</sub></span>
              : <span>∅</span>);
         
-        return <tr key={id}><td>{face}</td><td>{edge}</td></tr>;
+        if(props.faceHover == null || props.faceHover.split(',')[0] != id ) {
+            return <tr key={id}><td onMouseOver={props.onChangeFace.bind(props,f)} onMouseOut={props.onChangeOut}>{face}</td><td>{edge}</td></tr>;
+        } else {
+            return <tr key={id}><td onMouseOver={props.onChangeFace.bind(props,f)} onMouseOut={props.onChangeOut} bgcolor="FFA500">{face}</td><td>{edge}</td></tr>;
+        }
+        
 
 
     });
@@ -117,6 +121,7 @@ export class HalfEdgeTables extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.onChangeOut = this.onChangeOut.bind(this);
         this.onChangeEdge = this.onChangeEdge.bind(this);
+        this.onChangeFace = this.onChangeFace.bind(this);
     }
 
     onChange(d) {
@@ -130,14 +135,23 @@ export class HalfEdgeTables extends React.Component {
     onChangeOut(d) {
         this.props.onHoverChange(null);
         this.props.onEdgeHoverChange(null);
+        this.props.onFaceHoverChange(null);
     }
 
-    onChangeEdge(d) {
-        if(d instanceof Vertex) {
-            this.props.onEdgeHoverChange(d.getHalfEdge().getId());
+    onChangeEdge(e) {
+        if(e instanceof Vertex) {
+            this.props.onEdgeHoverChange(e.getHalfEdge().getId());
         } else {
-            this.props.onEdgeHoverChange(d.getId());
+            this.props.onEdgeHoverChange(e.getId());
         }
+    }
+
+    onChangeFace(f) {
+        const faceID = f.getId();
+        const firstEdge = f.getHalfEdge().getId();
+        const secondEdge = f.getHalfEdge().getNext().getId();
+        const thirdEdge = f.getHalfEdge().getPrev().getId();
+        this.props.onFaceHoverChange(faceID+","+firstEdge+","+secondEdge+","+thirdEdge);
     }
 
 
@@ -154,7 +168,7 @@ export class HalfEdgeTables extends React.Component {
           <div className="half-edge-tables">
             <h4>Records</h4>
             <VertexTable mesh={this.props.mesh} hover={this.props.hover} ieHover={this.props.ieHover} onChange={this.onChange} onChangeOut={this.onChangeOut} onChangeEdge={this.onChangeEdge}/>
-            <FaceTable mesh={this.props.mesh} hover={this.props.hover}/>
+            <FaceTable mesh={this.props.mesh} hover={this.props.hover} faceHover={this.props.faceHover} onChangeFace={this.onChangeFace} onChangeOut={this.onChangeOut}/>
             <HalfEdgeTable mesh={this.props.mesh} hover={this.props.hover} ieHover={this.props.ieHover} onChange={this.onChange} onChangeOut={this.onChangeOut} onChangeEdge={this.onChangeEdge}/>
           </div>
         );

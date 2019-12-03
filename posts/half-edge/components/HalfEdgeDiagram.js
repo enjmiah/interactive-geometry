@@ -255,6 +255,22 @@ export class HalfEdgeDiagram extends D3Component {
             .attr('stroke-width', 1)
             .attr('stroke', 'black');
         }
+
+        //Highlight the edges of a face
+        if(props.faceHover != null) {
+            var edgesID = props.faceHover.split(',');
+            var i;
+            for(i = 1; i < edgesID.length; i++) {
+                var id = edgesID[i];
+                d3.select('#edge'+id)
+                .attr('stroke-width', 1.3)
+                .attr('stroke', 'orange');
+            } 
+        } else {
+            d3.selectAll('line')
+            .attr('stroke-width', 1)
+            .attr('stroke', 'black');
+        }
     }
 
     getArrow(e) {
