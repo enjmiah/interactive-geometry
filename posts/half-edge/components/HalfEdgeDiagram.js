@@ -216,41 +216,30 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
             .attr("y", (e) => this.y(this.getArrowMiddleY(e)));
 
-        //Highlight vertex based on hovered row
+        //Determines which node or edge to highlight
         if (props.hover !== null) {
             d3.select('#circle'+props.hover)
-                .style('fill', 'orange');
-        } else {
-            d3.selectAll('circle')
-                .style('fill', 'black');
-        }
-
-        //Highlight incidentEdge based on hovered row
-        console.log(d3.select('#edge'+props.ieHover));
-        if(props.ieHover !== null) {
+            .style('fill', 'orange');
+        } else if (props.ieHover !== null) {
             d3.select('#edge'+props.ieHover)
             .style('stroke-width', 1.3)
             .style('stroke', 'orange');
-        } else {
-            d3.selectAll('line')
-            .style('stroke-width', 1)
-            .style('stroke', 'black');
-        }
 
-        //Highlight the edges of a face
-        if(props.faceHover != null) {
+        } else if (props.faceHover !== null) {
             var edgesID = props.faceHover.split(',');
             var i;
             for(i = 1; i < edgesID.length; i++) {
                 var id = edgesID[i];
                 d3.select('#edge'+id)
-                .attr('stroke-width', 1.3)
-                .attr('stroke', 'orange');
+                .style('stroke-width', 1.3)
+                .style('stroke', 'orange');
             }
         } else {
             d3.selectAll('line')
-            .attr('stroke-width', 1)
-            .attr('stroke', 'black');
+            .style('stroke-width', 1)
+            .style('stroke', 'black');
+            d3.selectAll('circle')
+                .style('fill', 'black');
         }
     }
 
