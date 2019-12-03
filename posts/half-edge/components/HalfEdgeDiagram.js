@@ -226,14 +226,15 @@ export class HalfEdgeDiagram extends D3Component {
         }
 
         //Highlight incidentEdge based on hovered row
+        console.log(d3.select('#edge'+props.ieHover));
         if(props.ieHover !== null) {
             d3.select('#edge'+props.ieHover)
-            .attr('stroke-width', 1.3)
-            .attr('stroke', 'orange');
+            .style('stroke-width', 1.3)
+            .style('stroke', 'orange');
         } else {
             d3.selectAll('line')
-            .attr('stroke-width', 1)
-            .attr('stroke', 'black');
+            .style('stroke-width', 1)
+            .style('stroke', 'black');
         }
 
         //Highlight the edges of a face
