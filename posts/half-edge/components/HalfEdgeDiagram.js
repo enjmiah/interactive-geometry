@@ -55,10 +55,13 @@ export class HalfEdgeDiagram extends D3Component {
             .enter().append("g");
         vertex
             .append("circle")
-            .attr("r", 5)
+            .attr("r", 11)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
             .attr("id", (d) => "circle"+d.getId())
+            .style('stroke', 'black')
+            .style('fill', 'none')
+            .style("cursor", "pointer")
             .on('mouseover', function(d){
                 d3.select(this)
                   .style('fill', 'orange');
@@ -66,7 +69,7 @@ export class HalfEdgeDiagram extends D3Component {
               })
             .on('mouseout', function(){
                 d3.select(this)
-                  .style('fill','black');
+                  .style('fill', 'none');
                   props.onHoverChange(null);
               });
 
@@ -75,8 +78,17 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("x", (d) => this.x(d.getPosition().x()))
                 .attr("y", (d) => this.y(d.getPosition().y()))
                 .text((d) => "v"+d.getId())
-                .style("font-size", "1.5em")
-                .attr("class", "node");
+                // .style("font-size", "1.5em")
+                .attr("class", "node")
+                .style("cursor", "pointer")
+                .on('mouseover', function(d){
+                    d3.select(this)
+                      props.onHoverChange(d.id);
+                  })
+                .on('mouseout', function(){
+                    d3.select(this)
+                      props.onHoverChange(null);
+                  });;
 
         const edge = svg
             .selectAll("line")
@@ -94,6 +106,7 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("marker-end", "url(#head)")
                 .attr("stroke", "black")
                 .attr('id', (e) => "edge"+e.getId())
+                .style("cursor", "pointer")
                 .on('mouseover', function(d){
                     d3.select(this)
                       .attr('stroke-width', 1.3)
@@ -109,10 +122,20 @@ export class HalfEdgeDiagram extends D3Component {
 
         edge
             .append("text")
-                .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-                .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
+                .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
+                .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
                 .text((e) => "e" + e.getId())
-                .attr('class', 'edge');
+                .attr('class', 'edge')
+                .style("cursor", "pointer")
+                .on('mouseover', function(d){
+                    d3.select(this)
+                      props.onEdgeHoverChange(d.id);
+                  })
+                .on('mouseout', function(){
+                    d3.select(this)
+                      props.onEdgeHoverChange(null);
+                  });
+
         
     
         const face = svg
@@ -146,7 +169,9 @@ export class HalfEdgeDiagram extends D3Component {
             )
             .style('stroke','none')
             .style('fill', 'white')
-            .style('opacity', 0);
+            .style('opacity', 0)
+            .style("cursor", "pointer")
+            .attr('class', 'face_label');
 
         face
             .on('mouseover', (d) => {
@@ -186,7 +211,7 @@ export class HalfEdgeDiagram extends D3Component {
 
         const vertices = props.mesh.vertices;
         const edges = props.mesh.edges;
-        const centroid = props.mesh.getCentroid();
+        const faces = props.mesh.faces;
 
         this.x.domain(d3.extent(vertices, (d) => d.getPosition().x()));
         this.y.domain(d3.extent(vertices, (d) => d.getPosition().y()));
@@ -205,7 +230,7 @@ export class HalfEdgeDiagram extends D3Component {
         vertex
             .enter()
             .append("circle")
-            .attr("r", 4)
+            .attr("r", 11)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
             .attr("id", (d) => "circle"+d.getId())
@@ -224,10 +249,24 @@ export class HalfEdgeDiagram extends D3Component {
         vertex.exit().remove();
         vertex_label.exit().remove();
 
+        // Face update, remove excess faces and bounding rectangle
+        const face = svg
+                  .selectAll(".face")
+                  .data(faces);
+
+        const faceLabel = svg  
+                        .selectAll('.face_label')
+                        .data(faces);
+        face.exit().remove();
+        faceLabel.exit().remove();
+            
+
+        
+
         // Move vertices to new positions
         vertex.transition()
             .duration(animDuration)
-            .attr("r", 4)
+            .attr("r", 10)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()));
 
@@ -254,8 +293,8 @@ export class HalfEdgeDiagram extends D3Component {
             .merge(edge);
 
         edge_label.enter().append("text")
-            .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-            .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
+            .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
+            .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
             .text((e) => "e" + e.getId())
             .attr('class', 'edge')
             .merge(edge_label);
@@ -272,8 +311,8 @@ export class HalfEdgeDiagram extends D3Component {
 
         edge_label.transition()
             .duration(animDuration)
-            .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-            .attr("y", (e) => this.y(this.getArrowMiddleY(e)));
+            .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
+            .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()));
 
         //Determines which node or edge to highlight
         if (props.hover !== null) {
@@ -304,7 +343,7 @@ export class HalfEdgeDiagram extends D3Component {
             .style('stroke-width', 1)
             .style('stroke', 'black');
             d3.selectAll('circle')
-                .style('fill', 'black');
+                .style('fill', 'none');
         }
     }
 
@@ -348,8 +387,9 @@ export class HalfEdgeDiagram extends D3Component {
         end = end.add(offset);
 
         // TODO: scale these paddings based on scale of visualizations
-        const padding = direction.multiply(0.14);
-        return [start.add(padding), end.subtract(padding), faceCentroid];
+        const padding = direction.multiply(0.20);
+        const edgeLabelOffset = offset.multiply(2.8);
+        return [start.add(padding), end.subtract(padding), faceCentroid, edgeLabelOffset];
 
     }
 
