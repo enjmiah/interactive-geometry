@@ -42,6 +42,7 @@ export class HalfEdgeDiagram extends D3Component {
 
         const vertices = this.props.mesh.vertices;
         const edges = this.props.mesh.edges;
+        const faces = this.props.mesh.faces;
 
         this.x = d3.scaleLinear().range([0, height]);
         this.y = d3.scaleLinear().range([height, 0]);
@@ -112,6 +113,63 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
                 .text((e) => "e" + e.getId())
                 .attr('class', 'edge');
+        
+    
+        const face = svg
+                  .selectAll("square")
+                  .data(faces)
+                  .enter()
+                  .append("g");
+
+       var myText =  face 
+            .append("text")
+            .attr('x', (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
+            .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()))
+            .text((f) => "f" + f.getId())
+            .attr('text-anchor', 'middle')
+            .attr('class', 'face');
+
+        // Append a bounding box around the text label to increase the surface area
+        face
+            .append('rect')
+            .attr('x', (f) => 
+                myText.nodes()[f.getId()].getBBox().x - 22
+            )
+            .attr('y', (f) => 
+                myText.nodes()[f.getId()].getBBox().y - 22
+            )
+            .attr('width', (f) => 
+                myText.nodes()[f.getId()].getBBox().width + 44
+            )
+            .attr('height', (f) => 
+                myText.nodes()[f.getId()].getBBox().height + 44
+            )
+            .style('stroke','none')
+            .style('fill', 'white')
+            .style('opacity', 0);
+
+        face
+            .on('mouseover', (d) => {
+                props.onFaceHoverChange(d);
+            })
+            .on('mouseout', (d) => {
+                props.onFaceHoverChange(null);
+            })
+
+        // for (const a of myText.nodes()) {
+        //     var b = a.getBBox();
+        //     console.log(b);
+        // }
+
+        // for (const f of faces) {
+        //     // console.log(f.getId());
+        //     // console.log("---");
+        //     // console.log(f.getHalfEdge().getId());
+        //     console.log("Face Id : "+f.getId());
+        //     console.log("Edge Id : "+f.getHalfEdge().getId());
+        //     console.log(this.getArrow(f.getHalfEdge())[2].y());
+        // }
+
     }
 
     update(props, oldProps) {
@@ -128,6 +186,7 @@ export class HalfEdgeDiagram extends D3Component {
 
         const vertices = props.mesh.vertices;
         const edges = props.mesh.edges;
+        const centroid = props.mesh.getCentroid();
 
         this.x.domain(d3.extent(vertices, (d) => d.getPosition().x()));
         this.y.domain(d3.extent(vertices, (d) => d.getPosition().y()));
@@ -226,9 +285,15 @@ export class HalfEdgeDiagram extends D3Component {
             .style('stroke', 'orange');
 
         } else if (props.faceHover !== null) {
-            var edgesID = props.faceHover.split(',');
+            var f = props.faceHover;
+            const faceID = f.getId();
+            const firstEdge = f.getHalfEdge().getId();
+            const secondEdge = f.getHalfEdge().getNext().getId();
+            const thirdEdge = f.getHalfEdge().getPrev().getId();
+            
+            var edgesID = [firstEdge,secondEdge,thirdEdge];
             var i;
-            for(i = 1; i < edgesID.length; i++) {
+            for(i = 0; i < edgesID.length; i++) {
                 var id = edgesID[i];
                 d3.select('#edge'+id)
                 .style('stroke-width', 1.3)
@@ -284,7 +349,8 @@ export class HalfEdgeDiagram extends D3Component {
 
         // TODO: scale these paddings based on scale of visualizations
         const padding = direction.multiply(0.14);
-        return [start.add(padding), end.subtract(padding)];
+        return [start.add(padding), end.subtract(padding), faceCentroid];
+
     }
 
     getArrowStartX(e) {

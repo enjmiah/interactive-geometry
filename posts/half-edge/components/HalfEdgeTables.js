@@ -14,7 +14,7 @@ function get_edge_class_name(props, edge_id) {
 
 function get_face_class_name(props, face_id) {
     return ((props.faceHover !== null
-             && parseInt(props.faceHover.split(',')[0]) === face_id)
+             && parseInt(props.faceHover.getId()) === face_id)
             ? "hover" : "");
 }
 
@@ -194,11 +194,12 @@ export class HalfEdgeTables extends React.Component {
     }
 
     onChangeFace(f) {
-        const faceID = f.getId();
-        const firstEdge = f.getHalfEdge().getId();
-        const secondEdge = f.getHalfEdge().getNext().getId();
-        const thirdEdge = f.getHalfEdge().getPrev().getId();
-        this.props.onFaceHoverChange(faceID+","+firstEdge+","+secondEdge+","+thirdEdge);
+        // const faceID = f.getId();
+        // const firstEdge = f.getHalfEdge().getId();
+        // const secondEdge = f.getHalfEdge().getNext().getId();
+        // const thirdEdge = f.getHalfEdge().getPrev().getId();
+        // this.props.onFaceHoverChange(faceID+","+firstEdge+","+secondEdge+","+thirdEdge);
+        this.props.onFaceHoverChange(f);
     }
 
     render() {
