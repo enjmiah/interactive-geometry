@@ -13,7 +13,7 @@ function get_edge_class_name(props, edge_id) {
 }
 
 function get_face_class_name(props, face_id) {
-    return ((props.faceHover !== null
+    return ((props.faceHover !== null && props.faceHover !== undefined
              && parseInt(props.faceHover.getId()) === face_id)
             ? "hover" : "");
 }

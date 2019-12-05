@@ -284,7 +284,7 @@ export class HalfEdgeDiagram extends D3Component {
             .style('stroke-width', 1.3)
             .style('stroke', 'orange');
 
-        } else if (props.faceHover !== null) {
+        } else if (props.faceHover !== null && props.faceHover !== undefined) {
             var f = props.faceHover;
             const faceID = f.getId();
             const firstEdge = f.getHalfEdge().getId();
