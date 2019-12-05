@@ -64,12 +64,14 @@ export class HalfEdgeDiagram extends D3Component {
             .style("cursor", "pointer")
             .on('mouseover', function(d){
                 d3.select(this)
-                  .style('fill', 'orange');
+                  .style('fill', 'orange')
+                  .attr('r', 12);
                   props.onHoverChange(d.id);
               })
             .on('mouseout', function(){
                 d3.select(this)
-                  .style('fill', 'none');
+                  .style('fill', 'none')
+                  .attr('r', 11);
                   props.onHoverChange(null);
               });
 
@@ -156,16 +158,16 @@ export class HalfEdgeDiagram extends D3Component {
         face
             .append('rect')
             .attr('x', (f) => 
-                myText.nodes()[f.getId()].getBBox().x - 22
+                myText.nodes()[f.getId()].getBBox().x - 5
             )
             .attr('y', (f) => 
-                myText.nodes()[f.getId()].getBBox().y - 22
+                myText.nodes()[f.getId()].getBBox().y - 5
             )
             .attr('width', (f) => 
-                myText.nodes()[f.getId()].getBBox().width + 44
+                myText.nodes()[f.getId()].getBBox().width + 10
             )
             .attr('height', (f) => 
-                myText.nodes()[f.getId()].getBBox().height + 44
+                myText.nodes()[f.getId()].getBBox().height + 10
             )
             .style('stroke','none')
             .style('fill', 'white')
@@ -259,6 +261,26 @@ export class HalfEdgeDiagram extends D3Component {
                         .data(faces);
         face.exit().remove();
         faceLabel.exit().remove();
+
+        face.transition()
+        .duration(animDuration)
+        .attr('x', (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
+        .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()));
+
+        faceLabel.transition()
+        .duration(animDuration)
+        .attr('x', (f) => 
+        faceLabel.nodes()[f.getId()].getBBox().x - 5
+    )
+    .attr('y', (f) => 
+        faceLabel.nodes()[f.getId()].getBBox().y - 5
+    )
+    .attr('width', (f) => 
+        faceLabel.nodes()[f.getId()].getBBox().width + 10
+    )
+    .attr('height', (f) => 
+        faceLabel.nodes()[f.getId()].getBBox().height + 10
+    );
             
 
         
@@ -266,7 +288,6 @@ export class HalfEdgeDiagram extends D3Component {
         // Move vertices to new positions
         vertex.transition()
             .duration(animDuration)
-            .attr("r", 10)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()));
 
@@ -387,7 +408,7 @@ export class HalfEdgeDiagram extends D3Component {
         end = end.add(offset);
 
         // TODO: scale these paddings based on scale of visualizations
-        const padding = direction.multiply(0.20);
+        const padding = direction.multiply(0.22);
         const edgeLabelOffset = offset.multiply(2.8);
         return [start.add(padding), end.subtract(padding), faceCentroid, edgeLabelOffset];
 
