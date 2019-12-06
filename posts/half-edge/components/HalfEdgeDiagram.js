@@ -22,6 +22,7 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`)
             .style("width", "100%")
             .style("height", "auto");
+            
         // Define arrow-head
         // TODO: Change to harpoons
         svg
@@ -34,7 +35,7 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("refX", "6")
                     .attr("refY", "6")
                     .append("path")
-                        .attr("d", "M 0 0 12 6 0 12 3 6")
+                        .attr("d", "M 0 0 12 6 0 6.5 0 6")
                         .style("fill", "black");
         svg = svg
             .append("g")
