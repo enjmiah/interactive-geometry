@@ -7,9 +7,20 @@ function get_vertex_class_name(props, vertex_id) {
     return (vertex_id === props.hover ? "hover" : "");
 }
 
-function get_edge_class_name(props, edge_id) {
-    return ((props.ieHover !== null && edge_id === props.ieHover)
-            ? "hover" : "");
+function get_edge_class_name(props, edge) { 
+    var edgeType;
+    if(edge.getFace() !== undefined) {
+        edgeType = "interior";
+    } else {
+        edgeType = "boundary";
+    }
+
+    if (props.ieHover !== null && edge.getId() === props.ieHover) {
+        return "hover"+" "+edgeType;
+    } else {
+        console.log("WHY");
+        return edgeType;
+    }
 }
 
 function get_face_class_name(props, face_id) {
@@ -33,7 +44,7 @@ function VertexTable(props) {
              ? v.getHalfEdge().getId()
              : undefined);
         const vertex_class_name = get_vertex_class_name(props, v.getId());
-        const edge_class_name = get_edge_class_name(props, edge_id);
+        const edge_class_name = get_edge_class_name(props, v.getHalfEdge());
 
         return (
             <tr key={id}>
@@ -71,7 +82,7 @@ function FaceTable(props) {
             (<span><em>e</em><sub>{f.getHalfEdge().getId()}</sub></span>);
         const face_class_name = get_face_class_name(props, id);
         const edge_class_name =
-            get_edge_class_name(props, f.getHalfEdge().getId());
+            get_edge_class_name(props, f.getHalfEdge());
 
         return (
             <tr key={id}>
@@ -111,16 +122,16 @@ function HalfEdgeTable(props) {
         const next_text = <span><em>e</em><sub>{e.getNext().getId()}</sub></span>;
         const prev_text = <span><em>e</em><sub>{e.getPrev().getId()}</sub></span>;
 
-        const edge_class_name = get_edge_class_name(props, e.getId());
+        const edge_class_name = get_edge_class_name(props, e);
         const origin_class_name =
             get_vertex_class_name(props, e.getOrigin().getId());
-        const twin_class_name = get_edge_class_name(props, e.getTwin().getId());
+        const twin_class_name = get_edge_class_name(props, e.getTwin());
         const face_class_name =
             get_face_class_name(props, (e.getFace() !== undefined
                                         ? e.getFace().getId()
                                         : undefined));
-        const next_class_name = get_edge_class_name(props, e.getNext().getId());
-        const prev_class_name = get_edge_class_name(props, e.getPrev().getId());
+        const next_class_name = get_edge_class_name(props, e.getNext());
+        const prev_class_name = get_edge_class_name(props, e.getPrev());
 
         return  (
             <tr key={id}>

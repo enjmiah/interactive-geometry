@@ -4,7 +4,7 @@ const D3Component = require('idyll-d3-component');
 import {Vec3} from './util/Vec3';
 
 const animDuration = 500;
-const margin = {top: 10, right: 10, bottom: 10, left: 10};
+const margin = {top: 20, right: 20, bottom: 20, left: 20};
 const canvasWidth = 600;
 const canvasHeight = 0.666667 * canvasWidth;
 const width = canvasWidth - margin.left - margin.right;
@@ -106,7 +106,12 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("y2", (e) => this.y(this.getArrowEndY(e)))
                 .attr("stroke-width", 1)
                 .attr("marker-end", "url(#head)")
-                .attr("stroke", "black")
+                .attr("stroke", function(e) {
+                    if (e.getFace() !== undefined) {
+                        return "red"
+                    }
+                        return "blue"
+                })
                 .attr('id', (e) => "edge"+e.getId())
                 .style("cursor", "pointer")
                 .on('mouseover', function(d){
@@ -158,16 +163,16 @@ export class HalfEdgeDiagram extends D3Component {
         face
             .append('rect')
             .attr('x', (f) => 
-                myText.nodes()[f.getId()].getBBox().x - 5
+                myText.nodes()[f.getId()].getBBox().x - 10
             )
             .attr('y', (f) => 
-                myText.nodes()[f.getId()].getBBox().y - 5
+                myText.nodes()[f.getId()].getBBox().y - 10
             )
             .attr('width', (f) => 
-                myText.nodes()[f.getId()].getBBox().width + 10
+                myText.nodes()[f.getId()].getBBox().width + 20
             )
             .attr('height', (f) => 
-                myText.nodes()[f.getId()].getBBox().height + 10
+                myText.nodes()[f.getId()].getBBox().height + 20
             )
             .style('stroke','none')
             .style('fill', 'white')
@@ -270,17 +275,11 @@ export class HalfEdgeDiagram extends D3Component {
         faceLabel.transition()
         .duration(animDuration)
         .attr('x', (f) => 
-        faceLabel.nodes()[f.getId()].getBBox().x - 5
+            faceLabel.nodes()[f.getId()].getBBox().x
     )
-    .attr('y', (f) => 
-        faceLabel.nodes()[f.getId()].getBBox().y - 5
-    )
-    .attr('width', (f) => 
-        faceLabel.nodes()[f.getId()].getBBox().width + 10
-    )
-    .attr('height', (f) => 
-        faceLabel.nodes()[f.getId()].getBBox().height + 10
-    );
+        .attr('y', (f) => 
+            faceLabel.nodes()[f.getId()].getBBox().y
+        );
             
 
         
@@ -310,7 +309,12 @@ export class HalfEdgeDiagram extends D3Component {
             .attr('id', (e) => "edge" + e.getId())
             .attr("stroke-width", 1)
             .attr("marker-end", "url(#head)")
-            .attr("stroke", "black")
+            .attr("stroke", function(e) {
+                if (e.getFace() !== undefined) {
+                    return "red"
+                }
+                    return "blue"
+            })
             .merge(edge);
 
         edge_label.enter().append("text")
@@ -362,7 +366,12 @@ export class HalfEdgeDiagram extends D3Component {
         } else {
             d3.selectAll('line')
             .style('stroke-width', 1)
-            .style('stroke', 'black');
+            .style("stroke", function(e) {
+                if (e.getFace() !== undefined) {
+                    return "red"
+                }
+                    return "blue"
+            })
             d3.selectAll('circle')
                 .style('fill', 'none');
         }
