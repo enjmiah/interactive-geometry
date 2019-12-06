@@ -18,7 +18,6 @@ function get_edge_class_name(props, edge) {
     if (props.ieHover !== null && edge.getId() === props.ieHover) {
         return "hover"+" "+edgeType;
     } else {
-        console.log("WHY");
         return edgeType;
     }
 }
@@ -205,11 +204,6 @@ export class HalfEdgeTables extends React.Component {
     }
 
     onChangeFace(f) {
-        // const faceID = f.getId();
-        // const firstEdge = f.getHalfEdge().getId();
-        // const secondEdge = f.getHalfEdge().getNext().getId();
-        // const thirdEdge = f.getHalfEdge().getPrev().getId();
-        // this.props.onFaceHoverChange(faceID+","+firstEdge+","+secondEdge+","+thirdEdge);
         this.props.onFaceHoverChange(f);
     }
 

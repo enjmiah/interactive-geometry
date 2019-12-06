@@ -188,20 +188,6 @@ export class HalfEdgeDiagram extends D3Component {
                 props.onFaceHoverChange(null);
             })
 
-        // for (const a of myText.nodes()) {
-        //     var b = a.getBBox();
-        //     console.log(b);
-        // }
-
-        // for (const f of faces) {
-        //     // console.log(f.getId());
-        //     // console.log("---");
-        //     // console.log(f.getHalfEdge().getId());
-        //     console.log("Face Id : "+f.getId());
-        //     console.log("Edge Id : "+f.getHalfEdge().getId());
-        //     console.log(this.getArrow(f.getHalfEdge())[2].y());
-        // }
-
     }
 
     update(props, oldProps) {
