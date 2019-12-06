@@ -9,10 +9,10 @@ function get_vertex_class_name(props, vertex_id) {
 
 function get_edge_class_name(props, edge) { 
     var edgeType;
-    if(edge.getFace() !== undefined) {
-        edgeType = "interior";
-    } else {
+    if(edge.getFace() === undefined) {
         edgeType = "boundary";
+    } else {
+        edgeType = "interior";
     }
 
     if (props.ieHover !== null && edge.getId() === props.ieHover) {
