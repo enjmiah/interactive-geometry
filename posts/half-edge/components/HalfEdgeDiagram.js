@@ -4,7 +4,7 @@ const D3Component = require('idyll-d3-component');
 import {Vec3} from './util/Vec3';
 
 const animDuration = 500;
-const margin = {top: 20, right: 20, bottom: 20, left: 20};
+const margin = {top: 25, right: 25, bottom: 25, left: 25};
 const canvasWidth = 600;
 const canvasHeight = 0.666667 * canvasWidth;
 const width = canvasWidth - margin.left - margin.right;
@@ -167,6 +167,7 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
                 .text((e) => "e" + e.getId())
                 .attr('class', 'edge')
+                .attr('id', (e) => "edge_label"+ e.getId())
                 .style("cursor", "pointer")
                 .on('mouseover', function(d){
                     d3.select(this)
@@ -192,7 +193,8 @@ export class HalfEdgeDiagram extends D3Component {
             .text((f) => "f" + f.getId())
             .attr('text-anchor', 'middle')
             .style('cursor', 'pointer')
-            .attr('class', 'face');
+            .attr('class', 'face')
+            .attr('id', (f) => "face_label"+ f.getId());
 
         // Append a bounding box around the text label to increase the surface area
         // face
@@ -349,6 +351,7 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
             .text((e) => "e" + e.getId())
             .attr('class', 'edge')
+            .attr('id', (e) => 'edge_label'+ e.getId())
             .merge(edge_label);
 
         edge.exit().remove();
@@ -375,6 +378,9 @@ export class HalfEdgeDiagram extends D3Component {
             .style('stroke-width', 1.3)
             .style('stroke', 'orange')
             .attr('marker-end', 'url(#head_orange)');
+            d3.select('#edge_label'+props.ieHover)
+            .style('font-weight', 'bold')
+            .style('font-size', '1.2em');
 
         } else if (props.faceHover !== null && props.faceHover !== undefined) {
             var f = props.faceHover;
@@ -391,7 +397,14 @@ export class HalfEdgeDiagram extends D3Component {
                 .style('stroke-width', 1.3)
                 .style('stroke', 'orange')
                 .attr('marker-end', 'url(#head_orange)');
+                d3.select('#edge_label'+id)
+                .style('font-weight', 'bold')
+                .style('font-size', '1.2em');
             }
+
+            d3.select('#face_label'+faceID)
+                .style('font-weight', 'bold')
+                .style('font-size', '1.2em')
         } else {
             d3.selectAll('line')
             .style('stroke-width', 1)
@@ -409,6 +422,9 @@ export class HalfEdgeDiagram extends D3Component {
             });
             d3.selectAll('circle')
                 .style('fill', 'none');
+            d3.selectAll('text')
+                .style('font-weight', 'normal')
+                .style('font-size', '1em')
         }
     }
 
