@@ -1,17 +1,161 @@
-* {
-  box-sizing: border-box;
+@font-face {
+  font-family: 'Linux Libertine';
+  src: url('LinuxLibertine/LinuxLibertine-Regular.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Linux Libertine';
+  src: url('LinuxLibertine/LinuxLibertine-Italic.woff') format('woff');
+  font-style: italic;
+  font-display: swap;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background-color: #f9f9f6;
+  hyphens: auto;
+}
+
+h1, h2, h3, .idyll-text-container .katex-display, .idyll-text-container p,
+.idyll-text-container > img, .idyll-text-container > ol,
+.idyll-text-container > ul, .idyll-text-container > pre {
+  max-width: 550px;
 }
 
 .idyll-root {
-  margin: 0 auto;
+  margin: 80px auto;
   padding: 0;
-  max-width: 1024px;
+  max-width: 900px;
+
+  font-family: "Linux Libertine", "Linux Libertine O", "KaTeX_Main", serif;
+  font-size: 1.1rem;
+  line-height: 1.5;
 }
+
+hr { margin: 2em 0; }
+
+h1 {
+  margin: 0;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 2.4em;
+}
+
+.subtitle {
+  margin: 0;
+}
+
+h2, h3 {
+  margin: 1em 0em 0.5em;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-style: italic;
+  font-weight: normal;
+}
+
+h3 {
+  font-size: 1.12em;
+  font-weight: bold;
+}
+
+code {
+  font-family: "Roboto Mono", Monaco, monospace;
+  font-size: 0.83em;
+  letter-spacing: -0.03em;
+  font-stretch: condensed;
+  hyphens: none;
+}
+
+pre {
+  padding-left: 2em;
+  line-height: 98%;
+  font-size: 0.95em;
+}
+
+.aside-container, aside {
+  box-sizing: content-box;
+  float: right;
+  clear: right;
+  font-size: 0.88em;
+  width: 300px;
+  margin: 0 0 15px 15px;
+  position: relative;
+}
+
+.aside-container svg, aside svg {
+  max-width: 100%;
+  height: auto;
+}
+
+span.katex { font-size: 1em; }
+
+.sc {
+  font-variant: small-caps;
+  letter-spacing: 0.03em;
+  margin-right: -0.03em;
+}
+
+a:link, a:visited, a:active, a:hover { color: currentColor; }
+
+.can-hover {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: #3c94ea;
+  color: #0e4781;
+  border-radius: 2px;
+  cursor: help;
+}
+
+.can-hover:hover {
+  background-color: #ffbb6688;
+}
+
+::-moz-selection { background: #bef; }
+::selection { background: #bef; }
+
+/* Triangle figure */
+
+.triangle-fig text {
+  font-size: 0.75em;
+  font-style: italic;
+}
+
+.triangle-fig [id^='incident-face'] {
+  opacity: 0.1;
+}
+
+.triangle-fig .hover {
+  fill: #e68000;
+}
+
+.triangle-fig .hover[id^='incident-face'] {
+  opacity: 0.5;
+}
+
+.triangle-fig .line {
+  stroke: currentColor;
+}
+
+.triangle-fig .hover .line {
+  stroke: #e68000;
+}
+
+/* Vis CSS */
 
 .half-edge-vis {
   display: grid;
+  margin: 32px 0;
+  width: 100%;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 16px;
+  font-size: 0.84em;
 }
 
 .half-edge-tables {
@@ -33,6 +177,7 @@ textarea {
   width: 100%;
   height: 100%;
   resize: none;
+  font-size: 0.9em;
 }
 
 .d3-component svg {
@@ -63,7 +208,7 @@ td, th {
 
 h4 {
   margin: 0;
-  font-size: 1.4em;
+  font-size: 1.25em;
   font-variant: small-caps;
   text-transform: lowercase;
   letter-spacing: 0.15em;
@@ -94,4 +239,5 @@ svg .edge, svg .node {
   /* set anchors to centre of text box */
   text-anchor: middle;
   dominant-baseline: middle;
+  font-style: italic;
 }

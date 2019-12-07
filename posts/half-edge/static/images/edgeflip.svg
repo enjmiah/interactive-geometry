@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="237.09mm" height="86.318mm" version="1.1" viewBox="0 0 237.09 86.318" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="Arrow2Mend" style="overflow:visible" orient="auto">
+      <path transform="scale(-.6)" d="m8.7186 4.0337-10.926-4.0177 10.926-4.0177c-1.7455 2.3721-1.7354 5.6175-6e-7 8.0354z" style="fill-rule:evenodd;fill:#0e0e0e;stroke-linejoin:round;stroke-width:.625;stroke:#0e0e0e"/>
+    </marker>
+  </defs>
+  <g transform="translate(-61.114 -48.442)">
+    <g id="twin" transform="translate(-2.1167)">
+      <path d="m66.021 126.22v-65.476" style="fill:none;stroke:#000"/>
+      <path d="m66.411 56.217v5.5979l-3.18 3.0202z"/>
+    </g>
+    <path d="m66.473 56.305v65.476" style="fill:none;stroke:#0e0e0e"/>
+    <path d="m66.083 126.31v-5.5979l3.18-3.0202z"/>
+    <g id="next" transform="rotate(-90 105.46 93.058)">
+      <path d="m66.55 127.28v-65.476" style="fill:none;stroke-width:.8;stroke:#000"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g transform="rotate(90 67.098 129.95)">
+      <path d="m66.55 127.28v-65.476" style="fill:none;stroke-width:.8;stroke:#000"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g transform="rotate(90 106.25 90.927)">
+      <path d="m66.55 127.28v-65.476" style="fill:none;stroke-width:.8;stroke:#000"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g id="prev" transform="rotate(-90 66.441 53.911)">
+      <path d="m66.55 127.28v-65.476" style="fill:none;stroke-width:.8;stroke:#000"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <circle id="dest" cx="64.832" cy="130.42" r="1.7481"/>
+    <circle cx="143.49" cy="130.42" r="1.7481"/>
+    <circle id="origin" cx="65.494" cy="52.402" r="1.7481"/>
+    <circle transform="rotate(60)" cx="117.43" cy="-98.511" r="1.7481"/>
+    <g transform="translate(76.54)">
+      <path d="m66.021 126.22v-65.476" style="fill:none;stroke:#000"/>
+      <path d="m66.411 56.217v5.5979l-3.18 3.0202z"/>
+    </g>
+    <path d="m145.13 56.305v65.476" style="fill:none;stroke:#0e0e0e"/>
+    <path d="m144.74 126.31v-5.5979l3.18-3.0202z"/>
+    <path d="m73.55 57.046 60.731 60.731" style="fill:none;stroke:#3c94ea"/>
+    <path d="m137.21 121.25-3.9583-3.9583.11297-4.3842z" style="fill:#3c94ea"/>
+    <g transform="rotate(-45 72.003 50.482)">
+      <path d="m66.021 146.63v-85.886" style="fill:none;stroke:#000"/>
+      <path d="m66.411 56.217v5.5979l-3.18 3.0202z"/>
+    </g>
+    <path d="m160.61 91.154h34.963" style="fill:none;marker-end:url(#Arrow2Mend);opacity:.51;stroke-width:2;stroke:#0e0e0e"/>
+    <g transform="translate(148.17)">
+      <path d="m66.021 126.22v-65.476" style="fill:none;stroke:#000"/>
+      <path d="m66.411 56.217v5.5979l-3.18 3.0202z"/>
+    </g>
+    <path d="m216.76 56.305v65.476" style="fill:none;stroke:#0e0e0e"/>
+    <path d="m216.37 126.31v-5.5979l3.18-3.0202z"/>
+    <g transform="rotate(-90 180.6 17.916)">
+      <path d="m66.55 127.28v-65.476" style="fill:none;stroke-width:.8;stroke:#000"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g transform="rotate(90 142.24 205.09)">
+      <path d="m66.55 127.28v-65.476" style="fill:none;stroke-width:.8;stroke:#000"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g transform="rotate(90 181.39 166.07)">
+      <path d="m66.55 127.28v-65.476" style="fill:none;stroke-width:.8;stroke:#000"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g transform="rotate(-90 141.58 -21.231)">
+      <path d="m66.55 127.28v-65.476" style="fill:none;stroke-width:.8;stroke:#000"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <circle cx="215.11" cy="130.42" r="1.7481"/>
+    <circle cx="293.77" cy="130.42" r="1.7481"/>
+    <circle cx="215.78" cy="52.402" r="1.7481"/>
+    <circle transform="rotate(60)" cx="192.57" cy="-228.66" r="1.7481"/>
+    <g transform="translate(226.82)">
+      <path d="m66.021 126.22v-65.476" style="fill:none;stroke:#000"/>
+      <path d="m66.411 56.217v5.5979l-3.18 3.0202z"/>
+    </g>
+    <path d="m295.41 56.305v65.476" style="fill:none;stroke:#0e0e0e"/>
+    <path d="m295.02 126.31v-5.5979l3.18-3.0202z"/>
+    <g transform="rotate(45 175.03 322.22)">
+      <path d="m66.021 146.63v-85.886" style="fill:none;stroke:#000"/>
+      <path d="m66.411 56.217v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g transform="rotate(225 158.7 56.773)">
+      <path d="m66.021 146.63v-85.886" style="fill:none;stroke:#000"/>
+      <path d="m66.411 56.217v5.5979l-3.18 3.0202z"/>
+    </g>
+  </g>
+</svg>

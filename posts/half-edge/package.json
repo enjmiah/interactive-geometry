@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "license": "MIT",
   "idyll": {
-    "theme": "tufte",
+    "theme": "none",
     "layout": "none",
     "css": "styles.css",
     "authorView": false,
