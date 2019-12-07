@@ -16,6 +16,7 @@ function get_edge_class_name(props, edge) {
     } else {
         return edgeType;
     }
+    
 }
 
 function get_face_class_name(props, face_id) {
@@ -39,7 +40,8 @@ function VertexTable(props) {
              ? v.getHalfEdge().getId()
              : undefined);
         const vertex_class_name = get_vertex_class_name(props, v.getId());
-        const edge_class_name = get_edge_class_name(props, v.getHalfEdge());
+        const edge_class_name = (v.getHalfEdge() !== undefined ? get_edge_class_name(props, v.getHalfEdge()) : "");
+        
 
         return (
             <tr key={id}>
@@ -76,8 +78,7 @@ function FaceTable(props) {
         const edge =
             (<span><em>e</em><sub>{f.getHalfEdge().getId()}</sub></span>);
         const face_class_name = get_face_class_name(props, id);
-        const edge_class_name =
-            get_edge_class_name(props, f.getHalfEdge());
+        const edge_class_name = (f.getHalfEdge() !== undefined ? get_edge_class_name(props, f.getHalfEdge()) : "");
 
         return (
             <tr key={id}>

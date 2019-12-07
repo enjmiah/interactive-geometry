@@ -29,7 +29,6 @@ export class HalfEdgeDiagram extends D3Component {
             .style("height", "auto");
             
         // Define arrow-head
-        // TODO: Change to harpoons
         svg
             .append("svg:defs")
                 .append("svg:marker")
@@ -125,7 +124,6 @@ export class HalfEdgeDiagram extends D3Component {
             .data(edges)
             .enter().append("g");
 
-        //TODO: CHANGE COLOR OF ARROWHEAD ON HOVER
         edge
             .append("line")
                 .attr("x1", (e) => this.x(this.getArrowStartX(e)))
@@ -195,27 +193,6 @@ export class HalfEdgeDiagram extends D3Component {
             .style('cursor', 'pointer')
             .attr('class', 'face')
             .attr('id', (f) => "face_label"+ f.getId());
-
-        // Append a bounding box around the text label to increase the surface area
-        // face
-        //     .append('rect')
-        //     .attr('x', (f) => 
-        //         myText.nodes()[f.getId()].getBBox().x - 10
-        //     )
-        //     .attr('y', (f) => 
-        //         myText.nodes()[f.getId()].getBBox().y - 10
-        //     )
-        //     .attr('width', (f) => 
-        //         myText.nodes()[f.getId()].getBBox().width + 20
-        //     )
-        //     .attr('height', (f) => 
-        //         myText.nodes()[f.getId()].getBBox().height + 20
-        //     )
-        //     .style('stroke','none')
-        //     .style('fill', 'white')
-        //     .style('opacity', 0)
-        //     .style("cursor", "pointer")
-        //     .attr('class', 'face_label');
 
         face
             .on('mouseover', (d) => {
@@ -294,19 +271,7 @@ export class HalfEdgeDiagram extends D3Component {
         .duration(animDuration)
         .attr('x', (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
         .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()));
-
-    //     faceLabel.transition()
-    //     .duration(animDuration)
-    //     .attr('x', (f) => 
-    //         faceLabel.nodes()[f.getId()].getBBox().x + 0.000001
-    // )
-    //     .attr('y', (f) => 
-    //         faceLabel.nodes()[f.getId()].getBBox().y + 0.000001
-    //     );
-            
-
         
-
         // Move vertices to new positions
         vertex.transition()
             .duration(animDuration)
