@@ -191,28 +191,29 @@ export class HalfEdgeDiagram extends D3Component {
             .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()))
             .text((f) => "f" + f.getId())
             .attr('text-anchor', 'middle')
+            .style('cursor', 'pointer')
             .attr('class', 'face');
 
         // Append a bounding box around the text label to increase the surface area
-        face
-            .append('rect')
-            .attr('x', (f) => 
-                myText.nodes()[f.getId()].getBBox().x - 10
-            )
-            .attr('y', (f) => 
-                myText.nodes()[f.getId()].getBBox().y - 10
-            )
-            .attr('width', (f) => 
-                myText.nodes()[f.getId()].getBBox().width + 20
-            )
-            .attr('height', (f) => 
-                myText.nodes()[f.getId()].getBBox().height + 20
-            )
-            .style('stroke','none')
-            .style('fill', 'white')
-            .style('opacity', 0)
-            .style("cursor", "pointer")
-            .attr('class', 'face_label');
+        // face
+        //     .append('rect')
+        //     .attr('x', (f) => 
+        //         myText.nodes()[f.getId()].getBBox().x - 10
+        //     )
+        //     .attr('y', (f) => 
+        //         myText.nodes()[f.getId()].getBBox().y - 10
+        //     )
+        //     .attr('width', (f) => 
+        //         myText.nodes()[f.getId()].getBBox().width + 20
+        //     )
+        //     .attr('height', (f) => 
+        //         myText.nodes()[f.getId()].getBBox().height + 20
+        //     )
+        //     .style('stroke','none')
+        //     .style('fill', 'white')
+        //     .style('opacity', 0)
+        //     .style("cursor", "pointer")
+        //     .attr('class', 'face_label');
 
         face
             .on('mouseover', (d) => {
@@ -281,25 +282,25 @@ export class HalfEdgeDiagram extends D3Component {
                   .selectAll(".face")
                   .data(faces);
 
-        const faceLabel = svg  
-                        .selectAll('.face_label')
-                        .data(faces);
+        // const faceLabel = svg  
+        //                 .selectAll('.face_label')
+        //                 .data(faces);
         face.exit().remove();
-        faceLabel.exit().remove();
+        // faceLabel.exit().remove();
 
         face.transition()
         .duration(animDuration)
         .attr('x', (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
         .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()));
 
-        faceLabel.transition()
-        .duration(animDuration)
-        .attr('x', (f) => 
-            faceLabel.nodes()[f.getId()].getBBox().x
-    )
-        .attr('y', (f) => 
-            faceLabel.nodes()[f.getId()].getBBox().y
-        );
+    //     faceLabel.transition()
+    //     .duration(animDuration)
+    //     .attr('x', (f) => 
+    //         faceLabel.nodes()[f.getId()].getBBox().x + 0.000001
+    // )
+    //     .attr('y', (f) => 
+    //         faceLabel.nodes()[f.getId()].getBBox().y + 0.000001
+    //     );
             
 
         

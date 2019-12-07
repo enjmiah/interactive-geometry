@@ -8,12 +8,8 @@ function get_vertex_class_name(props, vertex_id) {
 }
 
 function get_edge_class_name(props, edge) { 
-    var edgeType;
-    if(edge.getFace() === undefined) {
-        edgeType = "boundary";
-    } else {
-        edgeType = "interior";
-    }
+
+    var edgeType = edge.getFace() !== undefined ? 'interior' : 'boundary';
 
     if (props.ieHover !== null && edge.getId() === props.ieHover) {
         return "hover"+" "+edgeType;
