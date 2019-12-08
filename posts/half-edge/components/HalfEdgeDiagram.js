@@ -5,7 +5,7 @@ import {Vec3} from "./util/Vec3";
 import {Palette} from "./util/Color";
 
 const animDuration = 500;
-const margin = {top: 26, right: 26, bottom: 26, left: 26};
+const margin = {top: 27, right: 27, bottom: 27, left: 27};
 const canvasWidth = 600;
 const canvasHeight = 0.666667 * canvasWidth;
 const width = canvasWidth - margin.left - margin.right;
