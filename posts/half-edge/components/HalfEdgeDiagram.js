@@ -10,6 +10,7 @@ const canvasWidth = 600;
 const canvasHeight = 0.666667 * canvasWidth;
 const width = canvasWidth - margin.left - margin.right;
 const height = canvasHeight - margin.top - margin.bottom;
+const subShift = "3px";
 
 function half_edge_class(e) {
     return (e.getFace() === undefined ? "boundary edge" : "interior edge");
@@ -123,7 +124,7 @@ export class HalfEdgeDiagram extends D3Component {
             .append("text")
                 .attr("x", (v) => this.x(v.getPosition().x()))
                 .attr("y", (v) => this.y(v.getPosition().y()))
-                .text((v) => `v${v.getId() + 1}`)
+                .html((v) => `v<tspan dy="${subShift}">${v.getId() + 1}</tspan>`)
                 .attr("class", "vertex-label");
         const vertex_merge = vertex.merge(vertex_enter);
         vertex_merge
@@ -163,7 +164,7 @@ export class HalfEdgeDiagram extends D3Component {
             .append("text")
                 .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
                 .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
-                .text((e) => `e${e.getId()}`);
+                .html((e) => `e<tspan dy="${subShift}">${e.getId()}</tspan>`);
         const edge_merge = edge.merge(edge_enter)
             .attr("class", (e) => half_edge_class(e));
         edge_merge
@@ -190,7 +191,7 @@ export class HalfEdgeDiagram extends D3Component {
                 .append("text")
                 .attr("x", (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
                 .attr("y", (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()))
-                .text((f) => `f${f.getId()}`)
+                .html((f) => `f<tspan dy="${subShift}">${f.getId()}</tspan>`)
                 .attr("class", "face")
                 .attr("id", (f) => `face${f.getId()}`)
                 .on("mouseover", (f, i) => {

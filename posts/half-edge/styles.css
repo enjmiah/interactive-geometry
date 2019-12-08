@@ -305,6 +305,10 @@ td.interior {
   font-style: italic;
 }
 
+.vertex-label tspan, .face tspan, .edge tspan {
+  font-size: 0.75em;
+}
+
 .vertex.hover {
   fill: var(--hover-color);
 }
