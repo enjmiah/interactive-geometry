@@ -63,7 +63,7 @@ function VertexTable(props) {
     });
 
     return (
-        <table className="vertices">
+        <table>
             <thead>
                 <tr>
                     <th>Vertex</th>
@@ -101,7 +101,7 @@ function FaceTable(props) {
     });
 
     return (
-        <table className="faces">
+        <table>
             <thead>
                 <tr>
                     <th>Face</th>
@@ -166,7 +166,7 @@ function HalfEdgeTable(props) {
         );
     });
     return (
-        <table className="half-edges">
+        <table>
             <thead>
                 <tr>
                     <th>Half-edge</th>
@@ -209,18 +209,24 @@ export class HalfEdgeTables extends React.Component {
         return (
           <div className="half-edge-tables">
             <h4>Records</h4>
-            <VertexTable mesh={this.props.mesh}
-                         hover={this.props.hover}
-                         onChange={this.onChange}
-                         onChangeOut={this.onChangeOut} />
-            <FaceTable mesh={this.props.mesh}
-                       hover={this.props.hover}
-                       onChange={this.onChange}
-                       onChangeOut={this.onChangeOut} />
-            <HalfEdgeTable mesh={this.props.mesh}
+            <div className="vertices">
+                <VertexTable mesh={this.props.mesh}
+                             hover={this.props.hover}
+                             onChange={this.onChange}
+                             onChangeOut={this.onChangeOut} />
+            </div>
+            <div className="faces">
+                <FaceTable mesh={this.props.mesh}
                            hover={this.props.hover}
                            onChange={this.onChange}
                            onChangeOut={this.onChangeOut} />
+            </div>
+            <div className="half-edges">
+                <HalfEdgeTable mesh={this.props.mesh}
+                               hover={this.props.hover}
+                               onChange={this.onChange}
+                               onChangeOut={this.onChangeOut} />
+            </div>
           </div>
         );
     }

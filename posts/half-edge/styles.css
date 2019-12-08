@@ -178,11 +178,11 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
   height: auto;
 }
 
-.vertices, .faces {
+div.vertices, div.faces {
   grid-row: 2;
 }
 
-.half-edges {
+div.half-edges {
   grid-column: 1 / 3;
 }
 
@@ -200,7 +200,6 @@ textarea {
 
 table {
   width: 100%;
-  height: initial;
 
   border-collapse: collapse;
 }
