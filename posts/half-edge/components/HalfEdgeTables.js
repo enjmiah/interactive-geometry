@@ -7,14 +7,21 @@ function get_vertex_class_name(props, vertex_id) {
     return (vertex_id === props.hover ? "hover" : "");
 }
 
-function get_edge_class_name(props, edge_id) {
-    return ((props.ieHover !== null && edge_id === props.ieHover)
-            ? "hover" : "");
+function get_edge_class_name(props, edge) { 
+
+    var edgeType = edge.getFace() !== undefined ? 'interior' : 'boundary';
+
+    if (props.ieHover !== null && edge.getId() === props.ieHover) {
+        return "hover"+" "+edgeType;
+    } else {
+        return edgeType;
+    }
+    
 }
 
 function get_face_class_name(props, face_id) {
-    return ((props.faceHover !== null
-             && parseInt(props.faceHover.split(',')[0]) === face_id)
+    return ((props.faceHover !== null && props.faceHover !== undefined
+             && parseInt(props.faceHover.getId()) === face_id)
             ? "hover" : "");
 }
 
@@ -33,7 +40,8 @@ function VertexTable(props) {
              ? v.getHalfEdge().getId()
              : undefined);
         const vertex_class_name = get_vertex_class_name(props, v.getId());
-        const edge_class_name = get_edge_class_name(props, edge_id);
+        const edge_class_name = (v.getHalfEdge() !== undefined ? get_edge_class_name(props, v.getHalfEdge()) : "");
+        
 
         return (
             <tr key={id}>
@@ -70,8 +78,7 @@ function FaceTable(props) {
         const edge =
             (<span><em>e</em><sub>{f.getHalfEdge().getId()}</sub></span>);
         const face_class_name = get_face_class_name(props, id);
-        const edge_class_name =
-            get_edge_class_name(props, f.getHalfEdge().getId());
+        const edge_class_name = (f.getHalfEdge() !== undefined ? get_edge_class_name(props, f.getHalfEdge()) : "");
 
         return (
             <tr key={id}>
@@ -111,16 +118,16 @@ function HalfEdgeTable(props) {
         const next_text = <span><em>e</em><sub>{e.getNext().getId()}</sub></span>;
         const prev_text = <span><em>e</em><sub>{e.getPrev().getId()}</sub></span>;
 
-        const edge_class_name = get_edge_class_name(props, e.getId());
+        const edge_class_name = get_edge_class_name(props, e);
         const origin_class_name =
             get_vertex_class_name(props, e.getOrigin().getId());
-        const twin_class_name = get_edge_class_name(props, e.getTwin().getId());
+        const twin_class_name = get_edge_class_name(props, e.getTwin());
         const face_class_name =
             get_face_class_name(props, (e.getFace() !== undefined
                                         ? e.getFace().getId()
                                         : undefined));
-        const next_class_name = get_edge_class_name(props, e.getNext().getId());
-        const prev_class_name = get_edge_class_name(props, e.getPrev().getId());
+        const next_class_name = get_edge_class_name(props, e.getNext());
+        const prev_class_name = get_edge_class_name(props, e.getPrev());
 
         return  (
             <tr key={id}>
@@ -194,11 +201,7 @@ export class HalfEdgeTables extends React.Component {
     }
 
     onChangeFace(f) {
-        const faceID = f.getId();
-        const firstEdge = f.getHalfEdge().getId();
-        const secondEdge = f.getHalfEdge().getNext().getId();
-        const thirdEdge = f.getHalfEdge().getPrev().getId();
-        this.props.onFaceHoverChange(faceID+","+firstEdge+","+secondEdge+","+thirdEdge);
+        this.props.onFaceHoverChange(f);
     }
 
     render() {

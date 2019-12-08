@@ -82,6 +82,14 @@ td.hover {
   background-color: orange;
 }
 
+td.boundary {
+  color: blue;
+}
+
+td.interior {
+  color: red;
+}
+
 svg .edge, svg .node {
   /* set anchors to centre of text box */
   text-anchor: middle;

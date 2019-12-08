@@ -4,7 +4,7 @@ const D3Component = require('idyll-d3-component');
 import {Vec3} from './util/Vec3';
 
 const animDuration = 500;
-const margin = {top: 10, right: 10, bottom: 10, left: 10};
+const margin = {top: 25, right: 25, bottom: 25, left: 25};
 const canvasWidth = 600;
 const canvasHeight = 0.666667 * canvasWidth;
 const width = canvasWidth - margin.left - margin.right;
@@ -17,31 +17,59 @@ export class HalfEdgeDiagram extends D3Component {
             console.error(props.mesh);
             return;
         }
+
+        const vertices = this.props.mesh.vertices;
+        const edges = this.props.mesh.edges;
+        const faces = this.props.mesh.faces;
+
         let svg = (this.svg = d3.select(node).append('svg'));
         svg = svg
             .attr("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`)
             .style("width", "100%")
             .style("height", "auto");
+            
         // Define arrow-head
-        // TODO: Change to harpoons
         svg
             .append("svg:defs")
                 .append("svg:marker")
-                    .attr("id", "head")
+                    .attr("id", "head_red")
                     .attr("orient", "auto")
                     .attr("markerWidth", "30")
                     .attr("markerHeight", "30")
                     .attr("refX", "6")
                     .attr("refY", "6")
                     .append("path")
-                        .attr("d", "M 0 0 12 6 0 12 3 6")
-                        .style("fill", "black");
+                        .attr("d", "M 0 0 12 6 0 6.5 0 6")
+                        .style("fill", "red");
+
+        svg
+            .append("svg:defs")
+                .append("svg:marker")
+                    .attr("id", "head_blue")
+                    .attr("orient", "auto")
+                    .attr("markerWidth", "30")
+                    .attr("markerHeight", "30")
+                    .attr("refX", "6")
+                    .attr("refY", "6")
+                    .append("path")
+                        .attr("d", "M 0 0 12 6 0 6.5 0 6")
+                        .style("fill", "blue");     
+                        
+        svg
+            .append("svg:defs")
+                .append("svg:marker")
+                    .attr("id", "head_orange")
+                    .attr("orient", "auto")
+                    .attr("markerWidth", "30")
+                    .attr("markerHeight", "30")
+                    .attr("refX", "6")
+                    .attr("refY", "6")
+                    .append("path")
+                        .attr("d", "M 0 0 12 6 0 6.5 0 6")
+                        .style("fill", "orange");   
         svg = svg
             .append("g")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-        const vertices = this.props.mesh.vertices;
-        const edges = this.props.mesh.edges;
 
         this.x = d3.scaleLinear().range([0, height]);
         this.y = d3.scaleLinear().range([height, 0]);
@@ -54,18 +82,23 @@ export class HalfEdgeDiagram extends D3Component {
             .enter().append("g");
         vertex
             .append("circle")
-            .attr("r", 5)
+            .attr("r", 11)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
             .attr("id", (d) => "circle"+d.getId())
+            .style('stroke', 'black')
+            .style('fill', 'none')
+            .style("cursor", "pointer")
             .on('mouseover', function(d){
                 d3.select(this)
-                  .style('fill', 'orange');
+                  .style('fill', 'orange')
+                  .attr('r', 12);
                   props.onHoverChange(d.id);
               })
             .on('mouseout', function(){
                 d3.select(this)
-                  .style('fill','black');
+                  .style('fill', 'none')
+                  .attr('r', 11);
                   props.onHoverChange(null);
               });
 
@@ -74,15 +107,23 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("x", (d) => this.x(d.getPosition().x()))
                 .attr("y", (d) => this.y(d.getPosition().y()))
                 .text((d) => "v"+d.getId())
-                .style("font-size", "1.5em")
-                .attr("class", "node");
+                // .style("font-size", "1.5em")
+                .attr("class", "node")
+                .style("cursor", "pointer")
+                .on('mouseover', function(d){
+                    d3.select(this)
+                      props.onHoverChange(d.id);
+                  })
+                .on('mouseout', function(){
+                    d3.select(this)
+                      props.onHoverChange(null);
+                  });;
 
         const edge = svg
             .selectAll("line")
             .data(edges)
             .enter().append("g");
 
-        //TODO: CHANGE COLOR OF ARROWHEAD ON HOVER
         edge
             .append("line")
                 .attr("x1", (e) => this.x(this.getArrowStartX(e)))
@@ -90,9 +131,21 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("x2", (e) => this.x(this.getArrowEndX(e)))
                 .attr("y2", (e) => this.y(this.getArrowEndY(e)))
                 .attr("stroke-width", 1)
-                .attr("marker-end", "url(#head)")
-                .attr("stroke", "black")
+                .attr("marker-end", function(e) {
+                    if (e.getFace() !== undefined) {
+                        return "url(#head_red)";
+                    } else {
+                        return "url(#head_blue)" 
+                    }
+                })
+                .attr("stroke", function(e) {
+                    if (e.getFace() !== undefined) {
+                        return "red"
+                    }
+                        return "blue"
+                })
                 .attr('id', (e) => "edge"+e.getId())
+                .style("cursor", "pointer")
                 .on('mouseover', function(d){
                     d3.select(this)
                       .attr('stroke-width', 1.3)
@@ -108,10 +161,47 @@ export class HalfEdgeDiagram extends D3Component {
 
         edge
             .append("text")
-                .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-                .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
+                .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
+                .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
                 .text((e) => "e" + e.getId())
-                .attr('class', 'edge');
+                .attr('class', 'edge')
+                .attr('id', (e) => "edge_label"+ e.getId())
+                .style("cursor", "pointer")
+                .on('mouseover', function(d){
+                    d3.select(this)
+                      props.onEdgeHoverChange(d.id);
+                  })
+                .on('mouseout', function(){
+                    d3.select(this)
+                      props.onEdgeHoverChange(null);
+                  });
+
+        
+    
+        const face = svg
+                  .selectAll("square")
+                  .data(faces)
+                  .enter()
+                  .append("g");
+
+       var myText =  face 
+            .append("text")
+            .attr('x', (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
+            .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()))
+            .text((f) => "f" + f.getId())
+            .attr('text-anchor', 'middle')
+            .style('cursor', 'pointer')
+            .attr('class', 'face')
+            .attr('id', (f) => "face_label"+ f.getId());
+
+        face
+            .on('mouseover', (d) => {
+                props.onFaceHoverChange(d);
+            })
+            .on('mouseout', (d) => {
+                props.onFaceHoverChange(null);
+            })
+
     }
 
     update(props, oldProps) {
@@ -128,6 +218,7 @@ export class HalfEdgeDiagram extends D3Component {
 
         const vertices = props.mesh.vertices;
         const edges = props.mesh.edges;
+        const faces = props.mesh.faces;
 
         this.x.domain(d3.extent(vertices, (d) => d.getPosition().x()));
         this.y.domain(d3.extent(vertices, (d) => d.getPosition().y()));
@@ -146,7 +237,7 @@ export class HalfEdgeDiagram extends D3Component {
         vertex
             .enter()
             .append("circle")
-            .attr("r", 4)
+            .attr("r", 11)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()))
             .attr("id", (d) => "circle"+d.getId())
@@ -165,10 +256,25 @@ export class HalfEdgeDiagram extends D3Component {
         vertex.exit().remove();
         vertex_label.exit().remove();
 
+        // Face update, remove excess faces and bounding rectangle
+        const face = svg
+                  .selectAll(".face")
+                  .data(faces);
+
+        // const faceLabel = svg  
+        //                 .selectAll('.face_label')
+        //                 .data(faces);
+        face.exit().remove();
+        // faceLabel.exit().remove();
+
+        face.transition()
+        .duration(animDuration)
+        .attr('x', (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
+        .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()));
+        
         // Move vertices to new positions
         vertex.transition()
             .duration(animDuration)
-            .attr("r", 4)
             .attr("cx", (d) => this.x(d.getPosition().x()))
             .attr("cy", (d) => this.y(d.getPosition().y()));
 
@@ -190,15 +296,27 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("y2", (e) => this.y(this.getArrowEndY(e)))
             .attr('id', (e) => "edge" + e.getId())
             .attr("stroke-width", 1)
-            .attr("marker-end", "url(#head)")
-            .attr("stroke", "black")
+            .attr("marker-end", function(e) {
+                if (e.getFace() !== undefined) {
+                    return "url(#head_red)";
+                } else {
+                    return "url(#head_blue)" 
+                }
+            })
+            .attr("stroke", function(e) {
+                if (e.getFace() !== undefined) {
+                    return "red"
+                }
+                    return "blue"
+            })
             .merge(edge);
 
         edge_label.enter().append("text")
-            .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-            .attr("y", (e) => this.y(this.getArrowMiddleY(e)))
+            .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
+            .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
             .text((e) => "e" + e.getId())
             .attr('class', 'edge')
+            .attr('id', (e) => 'edge_label'+ e.getId())
             .merge(edge_label);
 
         edge.exit().remove();
@@ -213,43 +331,65 @@ export class HalfEdgeDiagram extends D3Component {
 
         edge_label.transition()
             .duration(animDuration)
-            .attr("x", (e) => this.x(this.getArrowMiddleX(e)))
-            .attr("y", (e) => this.y(this.getArrowMiddleY(e)));
+            .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
+            .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()));
 
-        //Highlight vertex based on hovered row
+        //Determines which node or edge to highlight
         if (props.hover !== null) {
             d3.select('#circle'+props.hover)
-                .style('fill', 'orange');
-        } else {
-            d3.selectAll('circle')
-                .style('fill', 'black');
-        }
-
-        //Highlight incidentEdge based on hovered row
-        if(props.ieHover !== null) {
+            .style('fill', 'orange');
+        } else if (props.ieHover !== null) {
             d3.select('#edge'+props.ieHover)
-            .attr('stroke-width', 1.3)
-            .attr('stroke', 'orange');
-        } else {
-            d3.selectAll('line')
-            .attr('stroke-width', 1)
-            .attr('stroke', 'black');
-        }
+            .style('stroke-width', 1.3)
+            .style('stroke', 'orange')
+            .attr('marker-end', 'url(#head_orange)');
+            d3.select('#edge_label'+props.ieHover)
+            .style('font-weight', 'bold')
+            .style('font-size', '1.2em');
 
-        //Highlight the edges of a face
-        if(props.faceHover != null) {
-            var edgesID = props.faceHover.split(',');
+        } else if (props.faceHover !== null && props.faceHover !== undefined) {
+            var f = props.faceHover;
+            const faceID = f.getId();
+            const firstEdge = f.getHalfEdge().getId();
+            const secondEdge = f.getHalfEdge().getNext().getId();
+            const thirdEdge = f.getHalfEdge().getPrev().getId();
+            
+            var edgesID = [firstEdge,secondEdge,thirdEdge];
             var i;
-            for(i = 1; i < edgesID.length; i++) {
+            for(i = 0; i < edgesID.length; i++) {
                 var id = edgesID[i];
                 d3.select('#edge'+id)
-                .attr('stroke-width', 1.3)
-                .attr('stroke', 'orange');
+                .style('stroke-width', 1.3)
+                .style('stroke', 'orange')
+                .attr('marker-end', 'url(#head_orange)');
+                d3.select('#edge_label'+id)
+                .style('font-weight', 'bold')
+                .style('font-size', '1.2em');
             }
+
+            d3.select('#face_label'+faceID)
+                .style('font-weight', 'bold')
+                .style('font-size', '1.2em')
         } else {
             d3.selectAll('line')
-            .attr('stroke-width', 1)
-            .attr('stroke', 'black');
+            .style('stroke-width', 1)
+            .style("stroke", function(e) {
+                if (e.getFace() !== undefined) {
+                    return "red"
+                }
+                    return "blue"
+            })
+            .attr('marker-end', function(e) {
+                if (e.getFace() !== undefined) {
+                    return "url(#head_red)";
+                } 
+                return "url(#head_blue)";
+            });
+            d3.selectAll('circle')
+                .style('fill', 'none');
+            d3.selectAll('text')
+                .style('font-weight', 'normal')
+                .style('font-size', '1em')
         }
     }
 
@@ -293,8 +433,10 @@ export class HalfEdgeDiagram extends D3Component {
         end = end.add(offset);
 
         // TODO: scale these paddings based on scale of visualizations
-        const padding = direction.multiply(0.14);
-        return [start.add(padding), end.subtract(padding)];
+        const padding = direction.multiply(0.22);
+        const edgeLabelOffset = offset.multiply(2.8);
+        return [start.add(padding), end.subtract(padding), faceCentroid, edgeLabelOffset];
+
     }
 
     getArrowStartX(e) {
