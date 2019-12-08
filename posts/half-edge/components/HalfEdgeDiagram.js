@@ -5,7 +5,7 @@ import {Vec3} from "./util/Vec3";
 import {Palette} from "./util/Color";
 
 const animDuration = 500;
-const margin = {top: 25, right: 25, bottom: 25, left: 25};
+const margin = {top: 26, right: 26, bottom: 26, left: 26};
 const canvasWidth = 600;
 const canvasHeight = 0.666667 * canvasWidth;
 const width = canvasWidth - margin.left - margin.right;
@@ -72,7 +72,7 @@ export class HalfEdgeDiagram extends D3Component {
             .append("g")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-        this.x = d3.scaleLinear().range([0, height]);
+        this.x = d3.scaleLinear().range([0, width]);
         this.y = d3.scaleLinear().range([height, 0]);
 
         this.update(props, undefined);
@@ -94,8 +94,31 @@ export class HalfEdgeDiagram extends D3Component {
         const edges = props.mesh.edges;
         const faces = props.mesh.faces;
 
-        this.x.domain(d3.extent(vertices, (d) => d.getPosition().x()));
-        this.y.domain(d3.extent(vertices, (d) => d.getPosition().y()));
+        // Try to do "equal axis" axes -- i.e. 10 pixels in horizontal direction
+        // corresponds to the same distance in vertex coordinate space as 10
+        // pixels in vertical direction
+        let x_extent = d3.extent(vertices, (d) => d.getPosition().x());
+        let y_extent = d3.extent(vertices, (d) => d.getPosition().y());
+        const norm_x_range =
+            (x_extent[1] - x_extent[0]) * (canvasHeight / canvasWidth);
+        if (norm_x_range > y_extent[1] - y_extent[0]) {
+            const y_centre = 0.5 * (y_extent[0] + y_extent[1]);
+            y_extent = [
+                y_centre - 0.5 * norm_x_range,
+                y_centre + 0.5 * norm_x_range,
+            ];
+        } else {
+            const x_centre = 0.5 * (x_extent[0] + x_extent[1]);
+            const norm_y_range =
+                (y_extent[1] - y_extent[0]) * (canvasWidth / canvasHeight);
+            x_extent = [
+                x_centre - 0.5 * norm_y_range,
+                x_centre + 0.5 * norm_y_range,
+            ];
+        }
+        this.figure_scale = x_extent[1] - x_extent[0];
+        this.x.domain(x_extent);
+        this.y.domain(y_extent);
 
         const svg = this.svg.select("g");
         svg.selectAll(".error").remove(); // clear error message
@@ -259,15 +282,14 @@ export class HalfEdgeDiagram extends D3Component {
         }
 
         // Offset a little bit by normal vector
-        // TODO: scale these offsets based on scale of visualizations
-        const offset = normal.multiply(0.04);
+        const offset = normal.multiply(0.01 * this.figure_scale);
         start = start.add(offset);
         end = end.add(offset);
 
-        // TODO: scale these paddings based on scale of visualizations
-        const padding = direction.multiply(0.22);
-        const edgeLabelOffset = offset.multiply(2.8);
-        return [start.add(padding), end.subtract(padding), faceCentroid, edgeLabelOffset];
+        const padding = direction.multiply(0.04 * this.figure_scale);
+        const edgeLabelOffset = offset.multiply(2.75);
+        return [start.add(padding), end.subtract(padding),
+                faceCentroid, edgeLabelOffset];
 
     }
 
