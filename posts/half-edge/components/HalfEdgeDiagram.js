@@ -140,7 +140,7 @@ export class HalfEdgeDiagram extends D3Component {
                     });
         vertex_enter
             .append("circle")
-                .attr("r", 11)
+                .attr("r", 14)
                 .attr("cx", (v) => this.x(v.getPosition().x()))
                 .attr("cy", (v) => this.y(v.getPosition().y()));
         vertex_enter

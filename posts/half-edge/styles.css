@@ -298,6 +298,7 @@ td.interior {
 
 .vertex {
   cursor: default;
+  fill: #444;
 }
 
 .vertex-label {
