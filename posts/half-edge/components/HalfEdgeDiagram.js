@@ -38,10 +38,10 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("orient", "auto")
                     .attr("markerWidth", "30")
                     .attr("markerHeight", "30")
-                    .attr("refX", "6")
-                    .attr("refY", "6")
+                    .attr("refX", "7")
+                    .attr("refY", "4")
                     .append("path")
-                        .attr("d", "M 0 0 12 6 0 6.5 0 6")
+                        .attr("d", "M 0 0 8 4.25 0 4.25")
                         .style("fill", Palette.boundary);
         svg
             .append("svg:defs")
@@ -50,10 +50,10 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("orient", "auto")
                     .attr("markerWidth", "30")
                     .attr("markerHeight", "30")
-                    .attr("refX", "6")
-                    .attr("refY", "6")
+                    .attr("refX", "7")
+                    .attr("refY", "4")
                     .append("path")
-                        .attr("d", "M 0 0 12 6 0 6.5 0 6")
+                        .attr("d", "M 0 0 8 4.25 0 4.25")
                         .style("fill", Palette.interior);
         svg
             .append("svg:defs")
@@ -62,10 +62,10 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("orient", "auto")
                     .attr("markerWidth", "30")
                     .attr("markerHeight", "30")
-                    .attr("refX", "6")
-                    .attr("refY", "6")
+                    .attr("refX", "7")
+                    .attr("refY", "4")
                     .append("path")
-                        .attr("d", "M 0 0 12 6 0 6.5 0 6")
+                        .attr("d", "M 0 0 8 4.25 0 4.25")
                         .style("fill", Palette.hover);
         svg = svg
             .append("g")

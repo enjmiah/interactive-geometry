@@ -13,8 +13,8 @@
 
 :root {
   /* Must sync these with the colours in util/Color.js */
-  --boundary-color: #995939;
-  --interior-color: #395999;
+  --boundary-color: #c70a2d;
+  --interior-color: #0a85c7;
   --hover-color: #ed9907;
   --face-label-color: #18ab88;
 }
@@ -254,6 +254,7 @@ td.interior {
   text-anchor: middle;
   dominant-baseline: middle;
   font-style: italic;
+  font-size: 1.3em;
 }
 
 .half-edge-vis .error {
@@ -262,7 +263,7 @@ td.interior {
 }
 
 .interior.edge, .boundary.edge {
-  stroke-width: 1;
+  stroke-width: 2;
   font-style: italic;
 }
 
