@@ -88,12 +88,8 @@ export class Mesh {
         }
 
         // Add faces
-        // FIXME: support non-triangular faces
-        for (let i = 0; i < faces.length; i++) {
-            let v0 = this.vertices[faces[i][0]];
-            let v1 = this.vertices[faces[i][1]];
-            let v2 = this.vertices[faces[i][2]];
-            this.addFaceByVerts(v0, v1, v2);
+        for (const f of faces) {
+            this.addFaceByVerts(f.map(i => this.vertices[i]));
         }
 
         // Fix boundary half-edges
@@ -132,7 +128,7 @@ export class Mesh {
         return this.vertices[this.vertices.length - 1];
     }
 
-    addFaceByVerts(v1, v2, v3) {
+    addFaceByVerts(verts) {
         const createOrFail = (v1, v2) => {
             if (this.findEdge(v1, v2) !== undefined) {
                 throw Error(`Duplicate half edge between v${v1.getId()} and v${v2.getId()}`);
@@ -140,29 +136,33 @@ export class Mesh {
             return this.addEdge(v1, v2);
         };
 
-        const e1 = createOrFail(v1, v2);
-        const e2 = createOrFail(v2, v3);
-        const e3 = createOrFail(v3, v1);
+        const edges = [];
+        for (let i = 1; i < verts.length; ++i) {
+            edges.push(createOrFail(verts[i -1], verts[i]));
+        }
+        edges.push(createOrFail(verts[verts.length - 1], verts[0]));
 
-        return this._addFaceByHalfEdges(e1, e2, e3);
+        return this._addFaceByHalfEdges(edges);
     }
 
-    _addFaceByHalfEdges(e1, e2, e3) {
+    _addFaceByHalfEdges(edges) {
         // Add the face to the mesh
         const f = this.addFace();
 
         // Initialize face-edge relationship
-        f.setHalfEdge(e1);
+        f.setHalfEdge(edges[0]);
 
         // Initialize edge-face relationship
-        e1.setFace(f);
-        e2.setFace(f);
-        e3.setFace(f);
+        for (const e of edges) {
+            e.setFace(f);
+        }
 
         // Connect edge cycle around face
-        e1.setNext(e2); e2.setPrev(e1);
-        e2.setNext(e3); e3.setPrev(e2);
-        e3.setNext(e1); e1.setPrev(e3);
+        const len = edges.length;
+        for (let i = 0; i < len; ++i) {
+            edges[i].setNext(edges[(i + 1) % len]);
+            edges[i].setPrev(edges[(i - 1 + len) % len]);
+        }
 
         return f;
     }
