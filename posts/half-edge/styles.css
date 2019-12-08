@@ -1,17 +1,167 @@
-* {
-  box-sizing: border-box;
+@font-face {
+  font-family: 'Linux Libertine';
+  src: url('LinuxLibertine/LinuxLibertine-Regular.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Linux Libertine';
+  src: url('LinuxLibertine/LinuxLibertine-Italic.woff') format('woff');
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* Must sync these with the colours in util/Color.js */
+  --boundary-color: #c70a2d;
+  --interior-color: #0a85c7;
+  --hover-color: #ed9907;
+  --face-label-color: #18ab88;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background-color: #f9f9f6;
+  hyphens: auto;
+}
+
+h1, h2, h3, .idyll-text-container .katex-display, .idyll-text-container p,
+.idyll-text-container > img, .idyll-text-container > ol,
+.idyll-text-container > ul, .idyll-text-container > pre {
+  max-width: 550px;
 }
 
 .idyll-root {
-  margin: 0 auto;
+  margin: 80px auto;
   padding: 0;
-  max-width: 1024px;
+  max-width: 900px;
+
+  font-family: "Linux Libertine", "Linux Libertine O", "KaTeX_Main", serif;
+  font-size: 1.1rem;
+  line-height: 1.5;
 }
+
+hr { margin: 2em 0; }
+
+h1 {
+  margin: 0;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 2.4em;
+}
+
+.subtitle {
+  margin: 0;
+}
+
+h2, h3 {
+  margin: 1em 0em 0.5em;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-style: italic;
+  font-weight: normal;
+}
+
+h3 {
+  font-size: 1.12em;
+  font-weight: bold;
+}
+
+code {
+  letter-spacing: -0.03em;
+  font-stretch: condensed;
+  hyphens: none;
+}
+
+pre {
+  padding-left: 2em;
+  line-height: 98%;
+  font-size: 0.95em;
+}
+
+.aside-container, aside {
+  box-sizing: content-box;
+  float: right;
+  clear: right;
+  font-size: 0.88em;
+  width: 300px;
+  margin: 0 0 15px 15px;
+  position: relative;
+}
+
+.aside-container svg, aside svg {
+  max-width: 100%;
+  height: auto;
+}
+
+span.katex { font-size: 1em; }
+
+.sc {
+  font-variant: small-caps;
+  letter-spacing: 0.03em;
+  margin-right: -0.03em;
+}
+
+a:link, a:visited, a:active, a:hover { color: currentColor; }
+
+.can-hover {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: #3c94ea;
+  color: #0e4781;
+  border-radius: 2px;
+  cursor: help;
+}
+
+.can-hover:hover {
+  background-color: #ffbb6688;
+}
+
+::-moz-selection { background: #bef; }
+::selection { background: #bef; }
+
+/* Triangle figure */
+
+.triangle-fig text {
+  font-size: 0.75em;
+  font-style: italic;
+}
+
+.triangle-fig [id^='incident-face'] {
+  opacity: 0.1;
+}
+
+.triangle-fig .hover {
+  fill: #e68000;
+}
+
+.triangle-fig .hover[id^='incident-face'] {
+  opacity: 0.5;
+}
+
+.triangle-fig .line {
+  stroke: currentColor;
+}
+
+.triangle-fig .hover .line {
+  stroke: #e68000;
+}
+
+/* Vis CSS */
 
 .half-edge-vis {
   display: grid;
+  margin: 32px 0;
+  width: 100%;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 16px;
+  font-size: 0.84em;
 }
 
 .half-edge-tables {
@@ -21,18 +171,29 @@
   grid-gap: 16px;
 }
 
-.vertices, .faces {
+.half-edge-vis svg {
+  width: 100%;
+  height: auto;
+}
+
+div.vertices, div.faces {
   grid-row: 2;
 }
 
-.half-edges {
+div.half-edges {
   grid-column: 1 / 3;
+}
+
+textarea, code {
+  font-family: "Roboto Mono", Monaco, monospace;
+  font-size: 0.83em;
 }
 
 textarea {
   width: 100%;
-  height: 100%;
   resize: none;
+  border: 1px solid currentColor;
+  padding: 10px;
 }
 
 .d3-component svg {
@@ -42,7 +203,6 @@ textarea {
 
 table {
   width: 100%;
-  height: initial;
 
   border-collapse: collapse;
 }
@@ -63,7 +223,7 @@ td, th {
 
 h4 {
   margin: 0;
-  font-size: 1.4em;
+  font-size: 1.25em;
   font-variant: small-caps;
   text-transform: lowercase;
   letter-spacing: 0.15em;
@@ -83,15 +243,84 @@ td.hover {
 }
 
 td.boundary {
-  color: blue;
+  color: var(--boundary-color);
 }
 
 td.interior {
-  color: red;
+  color: var(--interior-color);
 }
 
-svg .edge, svg .node {
-  /* set anchors to centre of text box */
+.half-edge-vis text {
+  cursor: default;
+  /* set label anchors to centre of text box */
   text-anchor: middle;
   dominant-baseline: middle;
+  font-style: italic;
+  font-size: 1.3em;
+}
+
+.half-edge-vis .error {
+  text-anchor: initial;
+  dominant-baseline: initial;
+}
+
+.interior.edge, .boundary.edge {
+  stroke-width: 2;
+  font-style: italic;
+}
+
+.interior.edge {
+  stroke: var(--interior-color);
+  marker-end: url(#head_blue);
+}
+
+.boundary.edge {
+  stroke: var(--boundary-color);
+  marker-end: url(#head_red);
+}
+
+.boundary.edge text {
+  stroke: none;
+  fill: var(--boundary-color);
+}
+
+.interior.edge text {
+  stroke: none;
+  fill: var(--interior-color);
+}
+
+.edge.hover {
+  stroke: var(--hover-color);
+  marker-end: url(#head_orange);
+}
+
+.edge.hover text {
+  fill: var(--hover-color);
+}
+
+.vertex {
+  cursor: default;
+  fill: #444;
+}
+
+.vertex-label {
+  fill: #fff;
+  font-style: italic;
+}
+
+.vertex-label tspan, .face tspan, .edge tspan {
+  font-size: 0.75em;
+}
+
+.vertex.hover {
+  fill: var(--hover-color);
+}
+
+.face {
+  fill: var(--face-label-color);
+  font-style: italic;
+}
+
+.face.hover {
+  fill: var(--hover-color);
 }

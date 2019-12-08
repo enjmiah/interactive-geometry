@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="133.6mm" height="81.511mm" version="1.1" viewBox="0 0 133.6 81.511" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(-33.231 -50.654)">
+    <path id="incident-face" d="m68.225 54.15v75.028l65.201-37.609z" style="fill:#3c94ea;"/>
+    <g id="twin">
+      <path d="m66.021 126.22v-65.476" class="line"/>
+      <path d="m66.411 56.217v5.5979l-3.18 3.0202z" class="head"/>
+      <text x="58" y="93.294762" xml:space="preserve">t</text>
+    </g>
+    <g>
+      <path d="m68.59 56.305v65.476" style="stroke:#3c94ea"/>
+      <path d="m68.2 126.31v-5.5979l3.18-3.0202z" style="fill:#3c94ea"/>
+    </g>
+    <g id="next">
+      <g transform="rotate(60 68.382 131.07)">
+        <path d="m66.55 127.28v-65.476" class="line"/>
+        <path d="m66.94 57.276v5.5979l-3.18 3.0202z" class="head"/>
+      </g>
+      <text x="93" y="107" xml:space="preserve">n</text>
+    </g>
+    <g transform="rotate(240 90.205 92.005)">
+      <path d="m66.55 127.28v-65.476" class="line"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g transform="rotate(120 90.561 91.583)">
+      <path d="m66.55 127.28v-65.476" class="line"/>
+      <path d="m66.94 57.276v5.5979l-3.18 3.0202z"/>
+    </g>
+    <g id="prev">
+      <g transform="rotate(-60 66.557 52.957)">
+        <path d="m66.55 127.28v-65.476" class="line"/>
+        <path d="m66.94 57.276v5.5979l-3.18 3.0202z" class="head"/>
+      </g>
+      <text x="93" y="82" xml:space="preserve">p</text>
+    </g>
+    <circle id="dest" cx="66.949" cy="130.42" r="1.7481"/>
+    <circle cx="135.08" cy="91.712" r="1.7481"/>
+    <g id="origin">
+      <circle cx="67.61" cy="52.402" r="1.7481"/>
+      <text x="58" y="56" xml:space="preserve">o</text>
+    </g>
+    <text x="71.36097" y="93.294762" style="fill:#3c94ea;" xml:space="preserve">h</text>
+  </g>
+</svg>
