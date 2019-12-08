@@ -4,24 +4,26 @@ import { Vertex } from './util/Mesh';
 const React = require('react');
 
 function get_vertex_class_name(props, vertex_id) {
-    return (vertex_id === props.hover ? "hover" : "");
+    return ((props.hover && props.hover.type === "vertex"
+             && vertex_id === props.hover.id)
+            ? "hover" : "");
 }
 
-function get_edge_class_name(props, edge) { 
-
+function get_edge_class_name(props, edge) {
     var edgeType = edge.getFace() !== undefined ? 'interior' : 'boundary';
 
-    if (props.ieHover !== null && edge.getId() === props.ieHover) {
-        return "hover"+" "+edgeType;
+    if (props.hover && props.hover.type === "edge"
+        && edge.getId() === props.hover.id) {
+        return "hover " + edgeType;
     } else {
         return edgeType;
     }
-    
+
 }
 
 function get_face_class_name(props, face_id) {
-    return ((props.faceHover !== null && props.faceHover !== undefined
-             && parseInt(props.faceHover.getId()) === face_id)
+    return ((props.hover && props.hover.type === "face"
+             && props.hover.id === face_id)
             ? "hover" : "");
 }
 
@@ -30,7 +32,7 @@ function VertexTable(props) {
         const p = v.getPosition();
         const id = v.getId();
         const coordinate = <span>({p.x()}, {p.y()}, {p.z()})</span>;
-        const vertex = <span><em>v</em><sub>{id}</sub></span>;
+        const vertex = <span><em>v</em><sub>{id + 1}</sub></span>;
         const edge =
             (v.getHalfEdge() !== undefined
              ? <span><em>e</em><sub>{v.getHalfEdge().getId()}</sub></span>
@@ -41,15 +43,19 @@ function VertexTable(props) {
              : undefined);
         const vertex_class_name = get_vertex_class_name(props, v.getId());
         const edge_class_name = (v.getHalfEdge() !== undefined ? get_edge_class_name(props, v.getHalfEdge()) : "");
-        
+
+        const on_edge =
+            (edge_id !== undefined
+             ? props.onChange.bind(props, {type: "edge", id: edge_id})
+             : undefined);
 
         return (
             <tr key={id}>
-                <td onMouseOver={props.onChange.bind(props, v)}
+                <td onMouseOver={props.onChange.bind(props, {type: "vertex", id: id})}
                     onMouseOut={props.onChangeOut}
                     className={vertex_class_name}>{vertex}</td>
                 <td>{coordinate}</td>
-                <td onMouseOver={props.onChangeEdge.bind(props, v)}
+                <td onMouseOver={on_edge}
                     onMouseOut={props.onChangeOut}
                     className={edge_class_name}>{edge}</td>
             </tr>
@@ -78,14 +84,16 @@ function FaceTable(props) {
         const edge =
             (<span><em>e</em><sub>{f.getHalfEdge().getId()}</sub></span>);
         const face_class_name = get_face_class_name(props, id);
-        const edge_class_name = (f.getHalfEdge() !== undefined ? get_edge_class_name(props, f.getHalfEdge()) : "");
+        const edge_class_name =
+            (f.getHalfEdge() !== undefined
+             ? get_edge_class_name(props, f.getHalfEdge()) : "");
 
         return (
             <tr key={id}>
-                <td onMouseOver={props.onChangeFace.bind(props, f)}
+                <td onMouseOver={props.onChange.bind(props, {type: "face", id: id})}
                     onMouseOut={props.onChangeOut}
                     className={face_class_name}>{face}</td>
-                <td onMouseOver={props.onChangeEdge.bind(props, f.getHalfEdge())}
+                <td onMouseOver={props.onChange.bind(props, {type: "edge", id: f.getHalfEdge().getId()})}
                     onMouseOut={props.onChangeOut}
                     className={edge_class_name}>{edge}</td>
             </tr>
@@ -109,7 +117,7 @@ function HalfEdgeTable(props) {
     const rows = props.mesh.edges.map((e) => {
         const id = e.getId();
         const edge_text = <span><em>e</em><sub>{id}</sub></span>;
-        const origin_text = <span><em>v</em><sub>{e.getOrigin().getId()}</sub></span>
+        const origin_text = <span><em>v</em><sub>{e.getOrigin().getId() + 1}</sub></span>
         const twin_text = <span><em>e</em><sub>{e.getTwin().getId()}</sub></span>;
         const face_text =
             (e.getFace() !== undefined
@@ -129,25 +137,30 @@ function HalfEdgeTable(props) {
         const next_class_name = get_edge_class_name(props, e.getNext());
         const prev_class_name = get_edge_class_name(props, e.getPrev());
 
+        const on_face =
+            (e.getFace() !== undefined
+             ? props.onChange.bind(props, {type: "face", id: e.getFace().getId()})
+             : undefined);
+
         return  (
             <tr key={id}>
                 <td className={edge_class_name}
-                    onMouseOver={props.onChangeEdge.bind(props, e)}
+                    onMouseOver={props.onChange.bind(props, {type: "edge", id: id})}
                     onMouseOut={props.onChangeOut}>{edge_text}</td>
                 <td className={origin_class_name}
-                    onMouseOver={props.onChange.bind(props, e)}
+                    onMouseOver={props.onChange.bind(props, {type: "vertex", id: e.getOrigin().getId()})}
                     onMouseOut={props.onChangeOut}>{origin_text}</td>
                 <td className={twin_class_name}
-                    onMouseOver={props.onChangeEdge.bind(props, e.getTwin())}
+                    onMouseOver={props.onChange.bind(props, {type: "edge", id: e.getTwin().getId()})}
                     onMouseOut={props.onChangeOut}>{twin_text}</td>
                 <td className={face_class_name}
-                    onMouseOver={props.onChangeFace.bind(props, e.getFace())}
+                    onMouseOver={on_face}
                     onMouseOut={props.onChangeOut}>{face_text}</td>
                 <td className={next_class_name}
-                    onMouseOver={props.onChangeEdge.bind(props, e.getNext())}
+                    onMouseOver={props.onChange.bind(props, {type: "edge", id: e.getNext().getId()})}
                     onMouseOut={props.onChangeOut}>{next_text}</td>
                 <td className={prev_class_name}
-                    onMouseOver={props.onChangeEdge.bind(props, e.getPrev())}
+                    onMouseOver={props.onChange.bind(props, {type: "edge", id: e.getPrev().getId()})}
                     onMouseOut={props.onChangeOut}>{prev_text}</td>
             </tr>
         );
@@ -174,34 +187,14 @@ export class HalfEdgeTables extends React.Component {
         super(props);
         this.onChange = this.onChange.bind(this);
         this.onChangeOut = this.onChangeOut.bind(this);
-        this.onChangeEdge = this.onChangeEdge.bind(this);
-        this.onChangeFace = this.onChangeFace.bind(this);
     }
 
-    onChange(d) {
-        if(d instanceof Vertex) {
-            this.props.onHoverChange(d.getId());
-        } else {
-            this.props.onHoverChange(d.getOrigin().getId());
-        }
+    onChange(h) {
+        this.props.onHoverChange(h);
     }
 
-    onChangeOut(d) {
+    onChangeOut(h) {
         this.props.onHoverChange(null);
-        this.props.onEdgeHoverChange(null);
-        this.props.onFaceHoverChange(null);
-    }
-
-    onChangeEdge(e) {
-        if(e instanceof Vertex) {
-            this.props.onEdgeHoverChange(e.getHalfEdge().getId());
-        } else {
-            this.props.onEdgeHoverChange(e.getId());
-        }
-    }
-
-    onChangeFace(f) {
-        this.props.onFaceHoverChange(f);
     }
 
     render() {
@@ -218,27 +211,15 @@ export class HalfEdgeTables extends React.Component {
             <h4>Records</h4>
             <VertexTable mesh={this.props.mesh}
                          hover={this.props.hover}
-                         faceHover={this.props.faceHover}
-                         ieHover={this.props.ieHover}
                          onChange={this.onChange}
-                         onChangeFace={this.onChangeFace}
-                         onChangeEdge={this.onChangeEdge}
                          onChangeOut={this.onChangeOut} />
             <FaceTable mesh={this.props.mesh}
                        hover={this.props.hover}
-                       faceHover={this.props.faceHover}
-                       ieHover={this.props.ieHover}
                        onChange={this.onChange}
-                       onChangeFace={this.onChangeFace}
-                       onChangeEdge={this.onChangeEdge}
                        onChangeOut={this.onChangeOut} />
             <HalfEdgeTable mesh={this.props.mesh}
                            hover={this.props.hover}
-                           faceHover={this.props.faceHover}
-                           ieHover={this.props.ieHover}
                            onChange={this.onChange}
-                           onChangeFace={this.onChangeFace}
-                           onChangeEdge={this.onChangeEdge}
                            onChangeOut={this.onChangeOut} />
           </div>
         );

@@ -1,7 +1,8 @@
-const React = require('react');
-const d3 = require('d3');
-const D3Component = require('idyll-d3-component');
-import {Vec3} from './util/Vec3';
+const React = require("react");
+const d3 = require("d3");
+const D3Component = require("idyll-d3-component");
+import {Vec3} from "./util/Vec3";
+import {Palette} from "./util/Color";
 
 const animDuration = 500;
 const margin = {top: 25, right: 25, bottom: 25, left: 25};
@@ -9,6 +10,10 @@ const canvasWidth = 600;
 const canvasHeight = 0.666667 * canvasWidth;
 const width = canvasWidth - margin.left - margin.right;
 const height = canvasHeight - margin.top - margin.bottom;
+
+function half_edge_class(e) {
+    return (e.getFace() === undefined ? "boundary edge" : "interior edge");
+}
 
 export class HalfEdgeDiagram extends D3Component {
 
@@ -23,12 +28,9 @@ export class HalfEdgeDiagram extends D3Component {
         const faces = this.props.mesh.faces;
 
         let svg = (this.svg = d3.select(node).append('svg'));
-        svg = svg
-            .attr("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`)
-            .style("width", "100%")
-            .style("height", "auto");
-            
-        // Define arrow-head
+        svg = svg.attr("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`);
+
+        // Define arrow-heads
         svg
             .append("svg:defs")
                 .append("svg:marker")
@@ -40,8 +42,7 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("refY", "6")
                     .append("path")
                         .attr("d", "M 0 0 12 6 0 6.5 0 6")
-                        .style("fill", "red");
-
+                        .style("fill", Palette.boundary);
         svg
             .append("svg:defs")
                 .append("svg:marker")
@@ -53,8 +54,7 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("refY", "6")
                     .append("path")
                         .attr("d", "M 0 0 12 6 0 6.5 0 6")
-                        .style("fill", "blue");     
-                        
+                        .style("fill", Palette.interior);
         svg
             .append("svg:defs")
                 .append("svg:marker")
@@ -66,142 +66,15 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("refY", "6")
                     .append("path")
                         .attr("d", "M 0 0 12 6 0 6.5 0 6")
-                        .style("fill", "orange");   
+                        .style("fill", Palette.hover);
         svg = svg
             .append("g")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
         this.x = d3.scaleLinear().range([0, height]);
         this.y = d3.scaleLinear().range([height, 0]);
-        this.x.domain(d3.extent(vertices, (d) => d.getPosition().x()));
-        this.y.domain(d3.extent(vertices, (d) => d.getPosition().y()));
 
-        const vertex = svg
-            .selectAll("circle")
-            .data(vertices)
-            .enter().append("g");
-        vertex
-            .append("circle")
-            .attr("r", 11)
-            .attr("cx", (d) => this.x(d.getPosition().x()))
-            .attr("cy", (d) => this.y(d.getPosition().y()))
-            .attr("id", (d) => "circle"+d.getId())
-            .style('stroke', 'black')
-            .style('fill', 'none')
-            .style("cursor", "pointer")
-            .on('mouseover', function(d){
-                d3.select(this)
-                  .style('fill', 'orange')
-                  .attr('r', 12);
-                  props.onHoverChange(d.id);
-              })
-            .on('mouseout', function(){
-                d3.select(this)
-                  .style('fill', 'none')
-                  .attr('r', 11);
-                  props.onHoverChange(null);
-              });
-
-        vertex
-            .append("text")
-                .attr("x", (d) => this.x(d.getPosition().x()))
-                .attr("y", (d) => this.y(d.getPosition().y()))
-                .text((d) => "v"+d.getId())
-                // .style("font-size", "1.5em")
-                .attr("class", "node")
-                .style("cursor", "pointer")
-                .on('mouseover', function(d){
-                    d3.select(this)
-                      props.onHoverChange(d.id);
-                  })
-                .on('mouseout', function(){
-                    d3.select(this)
-                      props.onHoverChange(null);
-                  });;
-
-        const edge = svg
-            .selectAll("line")
-            .data(edges)
-            .enter().append("g");
-
-        edge
-            .append("line")
-                .attr("x1", (e) => this.x(this.getArrowStartX(e)))
-                .attr("y1", (e) => this.y(this.getArrowStartY(e)))
-                .attr("x2", (e) => this.x(this.getArrowEndX(e)))
-                .attr("y2", (e) => this.y(this.getArrowEndY(e)))
-                .attr("stroke-width", 1)
-                .attr("marker-end", function(e) {
-                    if (e.getFace() !== undefined) {
-                        return "url(#head_red)";
-                    } else {
-                        return "url(#head_blue)" 
-                    }
-                })
-                .attr("stroke", function(e) {
-                    if (e.getFace() !== undefined) {
-                        return "red"
-                    }
-                        return "blue"
-                })
-                .attr('id', (e) => "edge"+e.getId())
-                .style("cursor", "pointer")
-                .on('mouseover', function(d){
-                    d3.select(this)
-                      .attr('stroke-width', 1.3)
-                      .attr('stroke', 'orange');
-                      props.onEdgeHoverChange(d.id);
-                  })
-                .on('mouseout', function(){
-                    d3.select(this)
-                      .attr('stroke-width', 1)
-                      .attr('stroke','black');
-                      props.onEdgeHoverChange(null);
-                  });
-
-        edge
-            .append("text")
-                .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
-                .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
-                .text((e) => "e" + e.getId())
-                .attr('class', 'edge')
-                .attr('id', (e) => "edge_label"+ e.getId())
-                .style("cursor", "pointer")
-                .on('mouseover', function(d){
-                    d3.select(this)
-                      props.onEdgeHoverChange(d.id);
-                  })
-                .on('mouseout', function(){
-                    d3.select(this)
-                      props.onEdgeHoverChange(null);
-                  });
-
-        
-    
-        const face = svg
-                  .selectAll("square")
-                  .data(faces)
-                  .enter()
-                  .append("g");
-
-       var myText =  face 
-            .append("text")
-            .attr('x', (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
-            .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()))
-            .text((f) => "f" + f.getId())
-            .attr('text-anchor', 'middle')
-            .style('cursor', 'pointer')
-            .attr('class', 'face')
-            .attr('id', (f) => "face_label"+ f.getId());
-
-        face
-            .on('mouseover', (d) => {
-                props.onFaceHoverChange(d);
-            })
-            .on('mouseout', (d) => {
-                props.onFaceHoverChange(null);
-            })
-
+        this.update(props, undefined);
     }
 
     update(props, oldProps) {
@@ -226,170 +99,128 @@ export class HalfEdgeDiagram extends D3Component {
         const svg = this.svg.select("g");
         svg.selectAll(".error").remove(); // clear error message
 
-        const vertex = svg
-            .selectAll("circle")
-            .data(vertices);
-        const vertex_label = svg
-            .selectAll(".node")
-            .data(vertices);
-
-        // Add vertices as needed
-        vertex
-            .enter()
-            .append("circle")
-            .attr("r", 11)
-            .attr("cx", (d) => this.x(d.getPosition().x()))
-            .attr("cy", (d) => this.y(d.getPosition().y()))
-            .attr("id", (d) => "circle"+d.getId())
-            .merge(vertex);
-
-        vertex_label
-            .enter()
-            .append("text")
-                .attr("x", (d) => this.x(d.getPosition().x()))
-                .attr("y", (d) => this.y(d.getPosition().y()))
-                .text((d) => "v" + d.getId())
-                .attr("class", "node")
-                .merge(vertex_label);
-
-        // Remove excess vertices
+        const vertex = svg.selectAll(".vertex").data(vertices);
         vertex.exit().remove();
-        vertex_label.exit().remove();
+        const vertex_enter =
+            vertex.enter()
+                .append("g")
+                    .attr("class", "vertex")
+                    .attr("id", (v) => "vertex" + v.getId())
+                    .on("mouseover", (v, i) => {
+                        props.onHoverChange({type: "vertex", id: i});
+                        svg.select(`#vertex${i}`).classed("hover", true);
+                    })
+                    .on("mouseout", (v, i) => {
+                        svg.select(`#vertex${i}`).classed("hover", false);
+                        props.onHoverChange(null);
+                    });
+        vertex_enter
+            .append("circle")
+                .attr("r", 11)
+                .attr("cx", (v) => this.x(v.getPosition().x()))
+                .attr("cy", (v) => this.y(v.getPosition().y()));
+        vertex_enter
+            .append("text")
+                .attr("x", (v) => this.x(v.getPosition().x()))
+                .attr("y", (v) => this.y(v.getPosition().y()))
+                .text((v) => `v${v.getId() + 1}`)
+                .attr("class", "vertex-label");
+        const vertex_merge = vertex.merge(vertex_enter);
+        vertex_merge
+            .selectAll("circle")
+                .transition().duration(animDuration)
+                // TODO: Bizarre, but v is a copy of the old value for some reason
+                .attr("cx", (v) => this.x(vertices[v.getId()].getPosition().x()))
+                .attr("cy", (v) => this.y(vertices[v.getId()].getPosition().y()));
+        vertex_merge
+            .selectAll("text")
+                .transition().duration(animDuration)
+                .attr("x", (v) => this.x(vertices[v.getId()].getPosition().x()))
+                .attr("y", (v) => this.y(vertices[v.getId()].getPosition().y()));
 
-        // Face update, remove excess faces and bounding rectangle
-        const face = svg
-                  .selectAll(".face")
-                  .data(faces);
-
-        // const faceLabel = svg  
-        //                 .selectAll('.face_label')
-        //                 .data(faces);
-        face.exit().remove();
-        // faceLabel.exit().remove();
-
-        face.transition()
-        .duration(animDuration)
-        .attr('x', (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
-        .attr('y', (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()));
-        
-        // Move vertices to new positions
-        vertex.transition()
-            .duration(animDuration)
-            .attr("cx", (d) => this.x(d.getPosition().x()))
-            .attr("cy", (d) => this.y(d.getPosition().y()));
-
-        vertex_label.transition()
-            .duration(animDuration)
-            .attr("x", (d) => this.x(d.getPosition().x()))
-            .attr("y", (d) => this.y(d.getPosition().y()));
-
-        const edge = svg
-            .selectAll("line")
-            .data(edges);
-        const edge_label = svg
-            .selectAll(".edge")
-            .data(edges);
-        edge.enter().append("line")
-            .attr("x1", (e) => this.x(this.getArrowStartX(e)))
-            .attr("y1", (e) => this.y(this.getArrowStartY(e)))
-            .attr("x2", (e) => this.x(this.getArrowEndX(e)))
-            .attr("y2", (e) => this.y(this.getArrowEndY(e)))
-            .attr('id', (e) => "edge" + e.getId())
-            .attr("stroke-width", 1)
-            .attr("marker-end", function(e) {
-                if (e.getFace() !== undefined) {
-                    return "url(#head_red)";
-                } else {
-                    return "url(#head_blue)" 
-                }
-            })
-            .attr("stroke", function(e) {
-                if (e.getFace() !== undefined) {
-                    return "red"
-                }
-                    return "blue"
-            })
-            .merge(edge);
-
-        edge_label.enter().append("text")
-            .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
-            .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
-            .text((e) => "e" + e.getId())
-            .attr('class', 'edge')
-            .attr('id', (e) => 'edge_label'+ e.getId())
-            .merge(edge_label);
-
+        const edge = svg.selectAll(".edge").data(edges);
         edge.exit().remove();
-        edge_label.exit().remove();
+        const edge_enter =
+            edge.enter()
+                .append("g")
+                    .attr("class", (e) => half_edge_class(e))
+                    .attr("id", (e) => "edge" + e.getId())
+                    .on("mouseover", (e, i) => {
+                        props.onHoverChange({type: "edge", id: i});
+                        svg.select(`#edge${i}`).classed("hover", true);
+                    })
+                    .on("mouseout", (e, i) => {
+                        svg.select(`#edge${i}`).classed("hover", false);
+                        props.onHoverChange(null);
+                    });
+        edge_enter
+            .append("line")
+                .attr("x1", (e) => this.x(this.getArrowStartX(e)))
+                .attr("y1", (e) => this.y(this.getArrowStartY(e)))
+                .attr("x2", (e) => this.x(this.getArrowEndX(e)))
+                .attr("y2", (e) => this.y(this.getArrowEndY(e)));
+        edge_enter
+            .append("text")
+                .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
+                .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()))
+                .text((e) => `e${e.getId()}`);
+        const edge_merge = edge.merge(edge_enter)
+            .attr("class", (e) => half_edge_class(e));
+        edge_merge
+            .selectAll("line")
+                .transition().duration(animDuration)
+                .attr("x1", (e) => this.x(this.getArrowStartX(edges[e.getId()])))
+                .attr("y1", (e) => this.y(this.getArrowStartY(edges[e.getId()])))
+                .attr("x2", (e) => this.x(this.getArrowEndX(edges[e.getId()])))
+                .attr("y2", (e) => this.y(this.getArrowEndY(edges[e.getId()])));
+        edge_merge
+            .selectAll("text")
+                .transition().duration(animDuration)
+                .attr("x", (e) =>
+                      (this.x(this.getArrowMiddleX(edges[e.getId()])
+                           + this.getArrow(edges[e.getId()])[3].x())))
+                .attr("y", (e) =>
+                      (this.y(this.getArrowMiddleY(edges[e.getId()])
+                           + this.getArrow(edges[e.getId()])[3].y())));
 
-        edge.transition()
-            .duration(animDuration)
-            .attr("x1", (e) => this.x(this.getArrowStartX(e)))
-            .attr("y1", (e) => this.y(this.getArrowStartY(e)))
-            .attr("x2", (e) => this.x(this.getArrowEndX(e)))
-            .attr("y2", (e) => this.y(this.getArrowEndY(e)));
+        const face = svg.selectAll(".face").data(faces);
+        face.exit().remove();
+        const face_enter =
+            face.enter()
+                .append("text")
+                .attr("x", (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
+                .attr("y", (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()))
+                .text((f) => `f${f.getId()}`)
+                .attr("class", "face")
+                .attr("id", (f) => `face${f.getId()}`)
+                .on("mouseover", (f, i) => {
+                    props.onHoverChange({type: "face", id: i});
+                    svg.select(`#face${i}`).classed("hover", true);
+                })
+                .on("mouseout", (f, i) => {
+                    svg.select(`#face${i}`).classed("hover", false);
+                    props.onHoverChange(null);
+                });
+        face.merge(face_enter)
+            .transition().duration(animDuration)
+            .attr("x", (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
+            .attr("y", (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()));
 
-        edge_label.transition()
-            .duration(animDuration)
-            .attr("x", (e) => this.x(this.getArrowMiddleX(e) + this.getArrow(e)[3].x()))
-            .attr("y", (e) => this.y(this.getArrowMiddleY(e) + this.getArrow(e)[3].y()));
-
-        //Determines which node or edge to highlight
-        if (props.hover !== null) {
-            d3.select('#circle'+props.hover)
-            .style('fill', 'orange');
-        } else if (props.ieHover !== null) {
-            d3.select('#edge'+props.ieHover)
-            .style('stroke-width', 1.3)
-            .style('stroke', 'orange')
-            .attr('marker-end', 'url(#head_orange)');
-            d3.select('#edge_label'+props.ieHover)
-            .style('font-weight', 'bold')
-            .style('font-size', '1.2em');
-
-        } else if (props.faceHover !== null && props.faceHover !== undefined) {
-            var f = props.faceHover;
-            const faceID = f.getId();
-            const firstEdge = f.getHalfEdge().getId();
-            const secondEdge = f.getHalfEdge().getNext().getId();
-            const thirdEdge = f.getHalfEdge().getPrev().getId();
-            
-            var edgesID = [firstEdge,secondEdge,thirdEdge];
-            var i;
-            for(i = 0; i < edgesID.length; i++) {
-                var id = edgesID[i];
-                d3.select('#edge'+id)
-                .style('stroke-width', 1.3)
-                .style('stroke', 'orange')
-                .attr('marker-end', 'url(#head_orange)');
-                d3.select('#edge_label'+id)
-                .style('font-weight', 'bold')
-                .style('font-size', '1.2em');
+        if (props.hover) {
+            if (props.hover.type === "vertex" || props.hover.type === "edge") {
+                svg.select(`#${props.hover.type}${props.hover.id}`)
+                    .classed("hover", true);
+            } else if (props.hover.type === "face") {
+                svg.select(`#face${props.hover.id}`).classed("hover", true);
+                let it = faces[props.hover.id].getHalfEdge();
+                const start_it = it;
+                do {
+                    svg.select(`#edge${it.getId()}`).classed("hover", true);
+                    it = it.getNext();
+                } while (it !== start_it);
             }
-
-            d3.select('#face_label'+faceID)
-                .style('font-weight', 'bold')
-                .style('font-size', '1.2em')
         } else {
-            d3.selectAll('line')
-            .style('stroke-width', 1)
-            .style("stroke", function(e) {
-                if (e.getFace() !== undefined) {
-                    return "red"
-                }
-                    return "blue"
-            })
-            .attr('marker-end', function(e) {
-                if (e.getFace() !== undefined) {
-                    return "url(#head_red)";
-                } 
-                return "url(#head_blue)";
-            });
-            d3.selectAll('circle')
-                .style('fill', 'none');
-            d3.selectAll('text')
-                .style('font-weight', 'normal')
-                .style('font-size', '1em')
+            svg.selectAll(".hover").classed("hover", false);
         }
     }
 

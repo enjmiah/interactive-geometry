@@ -11,6 +11,14 @@
   font-display: swap;
 }
 
+:root {
+  /* Must sync these with the colours in util/Color.js */
+  --boundary-color: #995939;
+  --interior-color: #395999;
+  --hover-color: #ed9907;
+  --face-label-color: #18ab88;
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -165,6 +173,11 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
   grid-gap: 16px;
 }
 
+.half-edge-vis svg {
+  width: 100%;
+  height: auto;
+}
+
 .vertices, .faces {
   grid-row: 2;
 }
@@ -228,16 +241,78 @@ td.hover {
 }
 
 td.boundary {
-  color: blue;
+  color: var(--boundary-color);
 }
 
 td.interior {
-  color: red;
+  color: var(--interior-color);
 }
 
-svg .edge, svg .node {
-  /* set anchors to centre of text box */
+.half-edge-vis text {
+  cursor: default;
+  /* set label anchors to centre of text box */
   text-anchor: middle;
   dominant-baseline: middle;
   font-style: italic;
+}
+
+.half-edge-vis .error {
+  text-anchor: initial;
+  dominant-baseline: initial;
+}
+
+.interior.edge, .boundary.edge {
+  stroke-width: 1;
+  font-style: italic;
+}
+
+.interior.edge {
+  stroke: var(--interior-color);
+  marker-end: url(#head_blue);
+}
+
+.boundary.edge {
+  stroke: var(--boundary-color);
+  marker-end: url(#head_red);
+}
+
+.boundary.edge text {
+  stroke: none;
+  fill: var(--boundary-color);
+}
+
+.interior.edge text {
+  stroke: none;
+  fill: var(--interior-color);
+}
+
+.edge.hover {
+  stroke: var(--hover-color);
+  marker-end: url(#head_orange);
+}
+
+.edge.hover text {
+  fill: var(--hover-color);
+}
+
+.vertex {
+  cursor: default;
+}
+
+.vertex-label {
+  fill: #fff;
+  font-style: italic;
+}
+
+.vertex.hover {
+  fill: var(--hover-color);
+}
+
+.face {
+  fill: var(--face-label-color);
+  font-style: italic;
+}
+
+.face.hover {
+  fill: var(--hover-color);
 }

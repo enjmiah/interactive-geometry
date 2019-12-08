@@ -10,8 +10,6 @@ class HalfEdgeVis extends React.Component {
 
         this.handleOBJChange = this.handleOBJChange.bind(this);
         this.handleHoverChange = this.handleHoverChange.bind(this);
-        this.handleEdgeHoverChange = this.handleEdgeHoverChange.bind(this);
-        this.handleFaceHoverChange = this.handleFaceHoverChange.bind(this);
 
         this.state = {
             obj: `# Enter your mesh definition in OBJ format below...
@@ -31,8 +29,6 @@ f 4 7 5
 `,
             mesh: null,
             hover: null,
-            ieHover: null,
-            faceHover: null,
         };
 
         this.reloadMesh(this.state.obj);
@@ -46,16 +42,8 @@ f 4 7 5
         this.reloadMesh(text);
     }
 
-    handleHoverChange(vertex) {
-        this.setState({hover: vertex});
-    }
-
-    handleEdgeHoverChange(edge) {
-        this.setState({ieHover: edge});
-    }
-
-    handleFaceHoverChange(face) {
-        this.setState({faceHover: face});
+    handleHoverChange(new_hover) {
+        this.setState({hover: new_hover});
     }
 
     render() {
@@ -65,18 +53,10 @@ f 4 7 5
                 <OBJEditor obj={this.state.obj} onOBJChange={this.handleOBJChange} />
                 <HalfEdgeDiagram mesh={this.state.mesh}
                                  hover={this.state.hover}
-                                 ieHover={this.state.ieHover}
-                                 faceHover={this.state.faceHover}
-                                 onHoverChange={this.handleHoverChange}
-                                 onEdgeHoverChange={this.handleEdgeHoverChange}
-                                 onFaceHoverChange={this.handleFaceHoverChange} />
+                                 onHoverChange={this.handleHoverChange} />
                 <HalfEdgeTables mesh={this.state.mesh}
                                 hover={this.state.hover}
-                                ieHover={this.state.ieHover}
-                                faceHover={this.state.faceHover}
-                                onHoverChange={this.handleHoverChange}
-                                onEdgeHoverChange={this.handleEdgeHoverChange}
-                                onFaceHoverChange={this.handleFaceHoverChange} />
+                                onHoverChange={this.handleHoverChange} />
             </div>
         );
     }
@@ -88,61 +68,6 @@ f 4 7 5
         } else {
             this.setState({mesh: mesh});
         }
-
-        /*
-        // Vertices
-        let stringBuilder = ["V = {"];
-        for (let i = 0, len = mesh.vertices.length; i < len; ++i) {
-            stringBuilder.push("(");
-            stringBuilder.push(mesh.vertices[i].getPosition().x());
-            stringBuilder.push(",");
-            stringBuilder.push(mesh.vertices[i].getPosition().y());
-            stringBuilder.push(")");
-            stringBuilder.push(", ");
-        }
-        stringBuilder.pop();
-        stringBuilder.push("}");
-        // console.log(stringBuilder.join(""));
-
-        // Half-edges
-        stringBuilder = ["HE = {"];
-        for (let i = 0, len = mesh.edges.length; i < len; ++i) {
-            stringBuilder.push("(");
-            stringBuilder.push(mesh.edges[i].getOrigin().getId());
-            stringBuilder.push(",");
-            stringBuilder.push(mesh.edges[i].getTwin().getOrigin().getId());
-            stringBuilder.push(")");
-            stringBuilder.push(", ");
-        }
-        stringBuilder.pop();
-        stringBuilder.push("}");
-        // console.log(stringBuilder.join(""));
-
-        // Faces
-        stringBuilder = ["F = {"];
-        for (let i = 0, len = mesh.faces.length; i < len; ++i) {
-            stringBuilder.push("(");
-            const start = mesh.faces[i].getHalfEdge();
-            let it = start;
-            do {
-                stringBuilder.push(it.getOrigin().getId());
-                stringBuilder.push(",");
-                it = it.getNext();
-            } while (it !== start);
-            stringBuilder.pop();
-            stringBuilder.push(")");
-            stringBuilder.push(", ");
-        }
-        stringBuilder.pop();
-        stringBuilder.push("}");
-        // console.log(stringBuilder.join(""));
-
-        console.log({
-            vertices: mesh.vertices,
-            edges: mesh.edges,
-            faces: mesh.faces
-        });
-        //*/
     }
 }
 
