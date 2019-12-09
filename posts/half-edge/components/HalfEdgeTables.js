@@ -218,8 +218,16 @@ export class HalfEdgeTables extends React.Component {
         this.props.onHoverChange(h);
     }
 
-    onChangeOut(h) {
+    onChangeOut() {
         this.props.onHoverChange(null);
+    }
+
+    pinVis() {
+        if (document.getElementById("pin").checked) {
+            document.querySelector(".pin-container").classList.add("pinned");
+        } else {
+            document.querySelector(".pin-container").classList.remove("pinned");
+        }
     }
 
     render() {
@@ -234,6 +242,12 @@ export class HalfEdgeTables extends React.Component {
         return (
           <div className="half-edge-tables">
             <h4>Records</h4>
+            {props.allow_pinning ?
+             (<div className="pin-checkbox-container">
+                  <input type="checkbox" id="pin" name="pin"
+                         autoComplete="off" onClick={this.pinVis} />
+                  <label htmlFor="pin">Pin diagram to view</label>
+              </div>) : undefined}
             <div className="vertices">
                 <VertexTable mesh={this.props.mesh}
                              hover={this.props.hover}
