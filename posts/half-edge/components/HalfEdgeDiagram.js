@@ -226,6 +226,7 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("x", (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
             .attr("y", (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()));
 
+        svg.selectAll(".hover").classed("hover", false);
         if (props.hover) {
             if (props.hover.type === "vertex" || props.hover.type === "edge") {
                 svg.select(`#${props.hover.type}${props.hover.id}`)
@@ -239,8 +240,6 @@ export class HalfEdgeDiagram extends D3Component {
                     it = it.getNext();
                 } while (it !== start_it);
             }
-        } else {
-            svg.selectAll(".hover").classed("hover", false);
         }
     }
 

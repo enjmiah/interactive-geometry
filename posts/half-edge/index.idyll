@@ -156,7 +156,72 @@ Illustration of the [Raw]`<span class="sc">EdgeFlip</span>`[/Raw] algorithm.
 
 As an exercise, we will walk through how to implement the [Raw]`<span class="sc">EdgeFlip</span>`[/Raw] algorithm, which, given a half-edge in the middle of two triangle faces, flips the orientation of the half-edge and its twin.
 
-We will show the records table at each step of the algorithm, and highlight
-inconsistent entries in red.
+We will show the records table at each step of the algorithm.
 
-TODO: vis
+We begin with our input half-edge highlighted (either *e[sub]3[/sub]* or *e[sub]2[/sub]* in the below mesh, but let's say *e[sub]3[/sub]*).
+
+[EdgeFlipConsistencyChecker stage:0 /]
+
+We first get references to all affected half-edges, since traversing the mesh
+whilst it is in an inconsistent state will be difficult.
+
+```
+def FlipEdge(HalfEdge e):
+    e5 = e.prev
+    e4 = e.next
+    twin = e.twin
+    e1 = twin.prev
+    e0 = twin.next
+```
+
+Next, we make sure there's no face or vertex references to `e` or `twin`
+(*e[sub]3[/sub]* and *e[sub]2[/sub]* in the diagram), which will we recycle in
+the process of performing the edge flip.
+
+```
+    for he in {e0, e1, e4, e5}:
+        he.origin.halfedge = &he
+    e1.face.halfedge = &e1
+    e5.face.halfedge = &e5
+```
+
+These operations are safe to do since the choice of representative half-edge is
+arbitrary; the mesh is still in a consistent state.  The affected cells are
+coloured light blue, although not all cells change to values different from
+their old values.
+
+[EdgeFlipConsistencyChecker stage:1 /]
+
+Next we recycle `e` and `twin`.  We will (arbitrarily) have `e` be the top
+diagonal half-edge in the diagram, and `twin` be its twin.  We can fill in the
+members of `e` and `twin` according to the below diagram.  After this, our data
+structure will become inconsistent.  We outline inconsistent cells in red.
+
+```
+    e.next = &e5
+    e.prev = &e0
+    e.origin = e1.origin
+    e.face = e5.face
+    twin.next = &e1
+    twin.prev = &e4
+    twin.origin = e5.origin
+    twin.face = e1.face
+```
+
+[EdgeFlipConsistencyChecker stage:2 check:true /]
+
+We update affected `next` and `prev` references.  Again, we can reference the
+diagram to fill in these values.
+
+```
+    e0.next = &e
+    e1.next = &e4
+    e4.next = &twin
+    e5.next = &e0
+    e0.prev = &e5
+    e1.prev = &twin
+    e4.prev = &e1
+    e5.prev = &e
+```
+
+[EdgeFlipConsistencyChecker stage:3 check:true /]

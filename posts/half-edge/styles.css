@@ -18,7 +18,7 @@
   --hover-color: #ed9907;
   --face-label-color: #18ab88;
 
-  --anim-duration: 0.14s;
+  --anim-duration: 0.11s;
 }
 
 * { box-sizing: border-box; }
@@ -105,6 +105,10 @@ svg {
 
 span.katex { font-size: 1em; }
 
+em > sup, em > sub {
+  font-style: normal;
+}
+
 .sc {
   font-variant: small-caps;
   letter-spacing: 0.03em;
@@ -158,13 +162,14 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
 
 /* Main vis */
 
-.half-edge-vis {
+.half-edge-vis, .consistency-checker {
   display: grid;
   margin: 32px 0;
   width: 100%;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 16px;
   font-size: 0.84em;
+  align-items: center;
 }
 
 .half-edge-stepper {
@@ -177,6 +182,10 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
   display: grid;
   grid-template-columns: 1.618fr 1fr;
   grid-gap: 16px;
+}
+
+.consistency-checker .half-edge-tables {
+  grid-column: 2;
 }
 
 div.vertices, div.faces {
@@ -194,6 +203,7 @@ textarea, code {
 
 textarea {
   width: 100%;
+  height: 100%;
   resize: none;
   border: 1px solid currentColor;
   padding: 10px;
@@ -234,6 +244,21 @@ h4 {
 
 sub, sup {
   font-size: 0.75em;
+}
+
+td {
+    -webkit-transition: background-color var(--anim-duration) ease-out;
+    -moz-transition: background-color var(--anim-duration) ease-out;
+    -o-transition: background-color var(--anim-duration) ease-out;
+  transition: background-color var(--anim-duration) ease-out;
+}
+
+td.changed {
+  background-color: rgba(7, 214, 237, 0.1);
+}
+
+td.inconsistent {
+  border: 3px solid red;
 }
 
 td.hover {

@@ -29,6 +29,11 @@ export class Vertex {
     getHalfEdge() { return this.he; }
 
     setHalfEdge(e) { this.he = e; }
+
+    copy() {
+        return new Vertex(this.position.value[0], this.position.value[1],
+                          this.position.value[2], this.id);
+    }
 }
 
 export class HalfEdge {
@@ -48,6 +53,10 @@ export class HalfEdge {
     setPrev(e) { this.prev = e; }
     setNext(e) { this.next = e; }
     setFace(f) { this.face = f; }
+
+    copy() {
+        return new HalfEdge(this.id);
+    }
 }
 
 export class Face {
@@ -60,6 +69,10 @@ export class Face {
     getHalfEdge() { return this.he; }
 
     setHalfEdge(e) { this.he = e; }
+
+    copy() {
+        return new Face(this.id);
+    }
 }
 
 /**
@@ -228,13 +241,74 @@ export class Mesh {
         return [min, max];
     }
 
-    getCentroid() {
-        var boundingBox = this.getBoundingBox();
+    copy() {
+        const other = new Mesh();
+        // Start by copying everything except for references, which are circular
+        for (const v of this.vertices) {
+            other.vertices.push(v.copy());
+        }
+        for (const f of this.faces) {
+            other.faces.push(f.copy());
+        }
+        for (const e of this.edges) {
+            other.edges.push(e.copy());
+        }
+        for (const n of this.normals) {
+            other.normals.push(n.copy());
+        }
 
-        var min = boundingBox[0];
-        var max = boundingBox[1];
+        // Update references
+        for (const v of this.vertices) {
+            const i = v.getId();
+            other.vertices[i].setHalfEdge(other.edges[v.getHalfEdge().getId()]);
+        }
+        for (const f of this.faces) {
+            const i = f.getId();
+            other.faces[i].setHalfEdge(other.edges[f.getHalfEdge().getId()]);
+        }
+        for (const e of this.edges) {
+            const he = other.edges[e.getId()];
+            he.setOrigin(other.vertices[e.getOrigin().getId()]);
+            he.setTwin(other.edges[e.getTwin().getId()]);
+            if (e.getFace() !== undefined)
+                he.setFace(other.faces[e.getFace().getId()]);
+            he.setNext(other.edges[e.getNext().getId()]);
+            he.setPrev(other.edges[e.getPrev().getId()]);
+        }
+        this.edgeMap.forEach((e, key) => {
+            other.edgeMap[key] = other.edges[e.getId()];
+        });
 
-        var centroid = min.add(max);
-        return centroid.multiply(0.5);
+        return other;
+    }
+
+    checkConsistency() {
+        for (const he of this.edges) {
+            if (he !== he.getTwin().getTwin()) {
+                console.error("he inconsistent twin");
+            }
+            if (he.getFace() !== he.getNext().getFace()) {
+                console.error("next face was inconsistent");
+            }
+            if (he.getFace() !== he.getPrev().getFace()) {
+                console.error("prev face was inconsistent");
+            }
+            if (he !== he.getPrev().getNext()) {
+                console.error("he inconsistent next");
+            }
+            if (he !== he.getNext().getPrev()) {
+                console.error("he inconsistent prev");
+            }
+        }
+        for (const v of this.vertices) {
+            if (v.getHalfEdge() !== undefined && v !== v.getHalfEdge().getOrigin()) {
+                console.error("v inconsistent he");
+            }
+        }
+        for (const f of this.faces) {
+            if (f !== f.getHalfEdge().getFace()) {
+                console.error("f inconsistent he");
+            }
+        }
     }
 }
