@@ -345,8 +345,10 @@ td.interior {
   font-style: italic;
 }
 
+/* subscript */
 .vertex-label tspan, .face tspan, .edge tspan {
   font-size: 0.75em;
+  font-style: normal;
 }
 
 .vertex.hover {
