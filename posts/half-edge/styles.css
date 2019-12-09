@@ -17,6 +17,8 @@
   --interior-color: #0a85c7;
   --hover-color: #ed9907;
   --face-label-color: #18ab88;
+
+  --anim-duration: 0.14s;
 }
 
 * { box-sizing: border-box; }
@@ -31,7 +33,8 @@ body {
 
 h1, h2, h3, .idyll-text-container .katex-display, .idyll-text-container p,
 .idyll-text-container > img, .idyll-text-container > ol,
-.idyll-text-container > ul, .idyll-text-container > pre {
+.idyll-text-container > ul, .idyll-text-container > pre,
+.half-edge-stepper {
   max-width: 550px;
 }
 
@@ -95,8 +98,8 @@ pre {
   position: relative;
 }
 
-.aside-container svg, aside svg {
-  max-width: 100%;
+svg {
+  width: 100%;
   height: auto;
 }
 
@@ -153,7 +156,7 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
   stroke: #e68000;
 }
 
-/* Vis CSS */
+/* Main vis */
 
 .half-edge-vis {
   display: grid;
@@ -164,16 +167,16 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
   font-size: 0.84em;
 }
 
+.half-edge-stepper {
+  margin: 32px 0;
+  text-align: center;
+}
+
 .half-edge-tables {
   grid-column: 1 / 3;
   display: grid;
   grid-template-columns: 1.618fr 1fr;
   grid-gap: 16px;
-}
-
-.half-edge-vis svg {
-  width: 100%;
-  height: auto;
 }
 
 div.vertices, div.faces {
@@ -194,11 +197,6 @@ textarea {
   resize: none;
   border: 1px solid currentColor;
   padding: 10px;
-}
-
-.d3-component svg {
-  background: #ddd;
-  max-height: 300px;
 }
 
 table {
@@ -250,7 +248,7 @@ td.interior {
   color: var(--interior-color);
 }
 
-.half-edge-vis text {
+.half-edge-diagram text {
   cursor: default;
   /* set label anchors to centre of text box */
   text-anchor: middle;
@@ -259,7 +257,7 @@ td.interior {
   font-size: 1.3em;
 }
 
-.half-edge-vis .error {
+.half-edge-diagram .error {
   text-anchor: initial;
   dominant-baseline: initial;
 }
@@ -267,6 +265,10 @@ td.interior {
 .interior.edge, .boundary.edge {
   stroke-width: 2;
   font-style: italic;
+    -webkit-transition: stroke var(--anim-duration) ease-out;
+    -moz-transition: stroke var(--anim-duration) ease-out;
+    -o-transition: stroke var(--anim-duration) ease-out;
+  transition: stroke var(--anim-duration) ease-out;
 }
 
 .interior.edge {
@@ -279,19 +281,25 @@ td.interior {
   marker-end: url(#head_red);
 }
 
-.boundary.edge text {
+.edge.hover {
+  stroke: var(--hover-color);
+  marker-end: url(#head_orange);
+}
+
+.boundary.edge text, .interior.edge text {
   stroke: none;
+    -webkit-transition: fill var(--anim-duration) ease-out;
+    -moz-transition: fill var(--anim-duration) ease-out;
+    -o-transition: fill var(--anim-duration) ease-out;
+  transition: fill var(--anim-duration) ease-out;
+}
+
+.boundary.edge text {
   fill: var(--boundary-color);
 }
 
 .interior.edge text {
-  stroke: none;
   fill: var(--interior-color);
-}
-
-.edge.hover {
-  stroke: var(--hover-color);
-  marker-end: url(#head_orange);
 }
 
 .edge.hover text {
@@ -301,6 +309,10 @@ td.interior {
 .vertex {
   cursor: default;
   fill: #444;
+    -webkit-transition: fill var(--anim-duration) ease-out;
+    -moz-transition: fill var(--anim-duration) ease-out;
+    -o-transition: fill var(--anim-duration) ease-out;
+  transition: fill var(--anim-duration) ease-out;
 }
 
 .vertex-label {
