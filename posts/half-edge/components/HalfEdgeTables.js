@@ -144,7 +144,6 @@ function HalfEdgeTable(props) {
         let prev_class_name = get_edge_class_name(props, e.getPrev());
         if (props.stage === 2 && (id === 2 || id === 3)) {
             origin_class_name += " changed";
-            twin_class_name += " changed";
             face_class_name += " changed";
             next_class_name += " changed";
             prev_class_name += " changed";

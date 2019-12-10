@@ -84,7 +84,7 @@ code {
 
 pre {
   padding-left: 2em;
-  line-height: 98%;
+  line-height: 120%;
   font-size: 0.95em;
 }
 
@@ -135,17 +135,29 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
 
 /* Triangle figure */
 
-.triangle-fig text {
+.triangle-fig {
   font-size: 0.75em;
   font-style: italic;
+  fill: currentColor;
 }
 
-.triangle-fig [id^='incident-face'] {
-  opacity: 0.1;
+.triangle-fig text, .triangle-fig circle {
+    -webkit-transition: fill var(--anim-duration) ease-out;
+    -moz-transition: fill var(--anim-duration) ease-out;
+    -o-transition: fill var(--anim-duration) ease-out;
+  transition: fill var(--anim-duration) ease-out;
 }
 
 .triangle-fig .hover {
   fill: #e68000;
+}
+
+.triangle-fig [id^='incident-face'] {
+  opacity: 0.1;
+    -webkit-transition: opacity var(--anim-duration) ease-out;
+    -moz-transition: opacity var(--anim-duration) ease-out;
+    -o-transition: opacity var(--anim-duration) ease-out;
+  transition: opacity var(--anim-duration) ease-out;
 }
 
 .triangle-fig .hover[id^='incident-face'] {
@@ -154,6 +166,10 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
 
 .triangle-fig .line {
   stroke: currentColor;
+    -webkit-transition: stroke var(--anim-duration) ease-out;
+    -moz-transition: stroke var(--anim-duration) ease-out;
+    -o-transition: stroke var(--anim-duration) ease-out;
+  transition: stroke var(--anim-duration) ease-out;
 }
 
 .triangle-fig .hover .line {
@@ -171,7 +187,7 @@ a:link, a:visited, a:active, a:hover { color: currentColor; }
   align-items: center;
 }
 
-.half-edge-vis, .consistency-checker {
+.half-edge-vis, .consistency-checker .half-edge-tables {
   font-size: 0.84em;
 }
 
