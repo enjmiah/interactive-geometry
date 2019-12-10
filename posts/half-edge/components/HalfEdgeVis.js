@@ -50,12 +50,16 @@ f 4 7 5
         const { hasError, idyll, updateProps, ...props } = this.props;
         return (
             <div className="half-edge-vis">
-                <OBJEditor obj={this.state.obj} onOBJChange={this.handleOBJChange} />
-                <HalfEdgeDiagram mesh={this.state.mesh}
-                                 hover={this.state.hover}
-                                 onHoverChange={this.handleHoverChange} />
+                <div className="pin-container">
+                    <OBJEditor obj={this.state.obj}
+                               onOBJChange={this.handleOBJChange} />
+                    <HalfEdgeDiagram mesh={this.state.mesh}
+                                     hover={this.state.hover}
+                                     onHoverChange={this.handleHoverChange} />
+                </div>
                 <HalfEdgeTables mesh={this.state.mesh}
                                 hover={this.state.hover}
+                                allow_pinning={true}
                                 onHoverChange={this.handleHoverChange} />
             </div>
         );

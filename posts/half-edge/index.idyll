@@ -5,7 +5,7 @@
 [Raw]
 ```
 <div class="subtitle">
-  Jerry Yin and Jeffrey Hao<br>
+  Jerry Yin and Jeffrey Goh<br>
   Dec. 10, 2019
 </div>
 ```
@@ -52,7 +52,7 @@ looking for.
 [TriangleCaption /]
 [/aside]
 
-A popular data structure which can answer such queries in constant time is the _half-edge data structure_.  In a half-edge data structure, we explicitly store the edges of the mesh by representing each edge with a pair of directed _half-edge twins_, with each of the two half-edges comprising an edge pointing in opposite directions.  A half-edge stores a reference to its twin, as well as references to the previous and next half-edges along the same face or hole.  A vertex stores its position and a reference to an arbitrary half-edge that originates from that vertex, and a face stores an arbitrary half-edge belonging to that face.  A half-edge data structure stores arrays of vertex, face, and half-edge records.
+A popular data structure which can answer such queries in constant time is the _half-edge data structure_.  In a half-edge data structure, we explicitly store the edges of the mesh by representing each edge with a pair of directed _half-edge twins_, with each of the two half-edges twins pointing in opposite directions.  A half-edge stores a reference to its twin, as well as references to the previous and next half-edges along the same face or hole.  A vertex stores its position and a reference to an arbitrary half-edge that originates from that vertex, and a face stores an arbitrary half-edge belonging to that face.  A half-edge data structure stores arrays of vertex, face, and half-edge records.
 
 For representing boundary edges (edges adjacent to a hole), we have two options.
 We can either represent boundary edges with a single half-edge whose twin
@@ -84,24 +84,24 @@ positions of the vertices of that face.
 In code, given the face `f`, this will look something like this:
 
 ```
-start_it = f.halfedge
-it = start_it
+start_he = f.halfedge
+he = start_he
 do {
     # do something useful
 
-    it = it.next
-} while it != start_it
+    he = he.next
+} while he != start_he
 ```
 
 Note that we use a do-while loop instead of a while loop, since we want to check
 the condition at the end of the loop iteration.  At the start of the first
-iteration, `it == start_it`, so if we checked the condition at the start of the
+iteration, `he == start_he`, so if we checked the condition at the start of the
 loop, our loop wouldn't run for any iterations.
 
-TODO: interactive vis for stepping through the iteration
+[HalfEdgeStepper type:"ccw_face" /]
 
-To traverse the face in the opposite direction, one can simply replace `it.next`
-with `it.prev`.
+To traverse the face in the opposite direction, one can simply replace `he.next`
+with `he.prev`.
 
 ## Iterating around a vertex
 
@@ -116,20 +116,19 @@ the faces (which is the default in OpenGL).
 
 ### Counter-clockwise traversal
 
-In code, given the vertex `v`, iterating through all the half-edges going out of
-`v` in counter-clockwise order looks like this:
+In code, given the vertex `v`, iterating through all the half-edges going out of `v` in counter-clockwise order looks like this:
 
 ```
-start_it = v.halfedge
-it = start_it
+start_he = v.halfedge
+he = start_he
 do {
     # do something useful
 
-    it = it.prev.twin
-} while it != start_it
+    he = he.prev.twin
+} while he != start_he
 ```
 
-TODO: interactive vis for stepping through the iteration
+[HalfEdgeStepper type:"ccw_vertex" randomize:true /]
 
 Note that our code still works even if there are boundary half-edges or
 non-triangular faces.
@@ -137,9 +136,9 @@ non-triangular faces.
 ### Clockwise traversal
 
 Traversing the vertex ring in clockwise order to very similar to traversing the
-ring in counter-clockwise order, except that we replace `it = it.prev.twin` with `it = it.twin.next`.
+ring in counter-clockwise order, except that we replace `he = he.prev.twin` with `he = he.twin.next`.
 
-TODO: interactive vis for stepping through the iteration
+[HalfEdgeStepper type:"cw_vertex" randomize:true /]
 
 
 ## Modifying a half-edge data structure
@@ -157,7 +156,72 @@ Illustration of the [Raw]`<span class="sc">EdgeFlip</span>`[/Raw] algorithm.
 
 As an exercise, we will walk through how to implement the [Raw]`<span class="sc">EdgeFlip</span>`[/Raw] algorithm, which, given a half-edge in the middle of two triangle faces, flips the orientation of the half-edge and its twin.
 
-We will show the records table at each step of the algorithm, and highlight
-inconsistent entries in red.
+We will show the records table at each step of the algorithm.
 
-TODO: vis
+We begin with our input half-edge highlighted (either *e[sub]3[/sub]* or *e[sub]2[/sub]* in the below mesh, but let's say *e[sub]3[/sub]*).
+
+[EdgeFlipConsistencyChecker stage:0 /]
+
+We first get references to all affected half-edges, since traversing the mesh
+whilst it is in an inconsistent state will be difficult.
+
+```
+def FlipEdge(HalfEdge e):
+    e5 = e.prev
+    e4 = e.next
+    twin = e.twin
+    e1 = twin.prev
+    e0 = twin.next
+```
+
+Next, we make sure there's no face or vertex references to `e` or `twin`
+(*e[sub]3[/sub]* and *e[sub]2[/sub]* in the diagram), which will we recycle in
+the process of performing the edge flip.
+
+```
+    for he in {e0, e1, e4, e5}:
+        he.origin.halfedge = &he
+    e1.face.halfedge = &e1
+    e5.face.halfedge = &e5
+```
+
+These operations are safe to do since the choice of representative half-edge is
+arbitrary; the mesh is still in a consistent state.  The affected cells are
+coloured light blue, although not all cells change to values different from
+their old values.
+
+[EdgeFlipConsistencyChecker stage:1 /]
+
+Next we recycle `e` and `twin`.  We will (arbitrarily) have `e` be the top
+diagonal half-edge in the diagram, and `twin` be its twin.  We can fill in the
+members of `e` and `twin` according to the below diagram.  After this, our data
+structure will become inconsistent.  We outline inconsistent cells in red.
+
+```
+    e.next = &e5
+    e.prev = &e0
+    e.origin = e1.origin
+    e.face = e5.face
+    twin.next = &e1
+    twin.prev = &e4
+    twin.origin = e5.origin
+    twin.face = e1.face
+```
+
+[EdgeFlipConsistencyChecker stage:2 check:true /]
+
+We update affected `next` and `prev` references.  Again, we can reference the
+diagram to fill in these values.
+
+```
+    e0.next = &e
+    e1.next = &e4
+    e4.next = &twin
+    e5.next = &e0
+    e0.prev = &e5
+    e1.prev = &twin
+    e4.prev = &e1
+    e5.prev = &e
+```
+
+[EdgeFlipConsistencyChecker stage:3 check:true /]

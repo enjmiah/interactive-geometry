@@ -42,7 +42,10 @@ function VertexTable(props) {
              ? v.getHalfEdge().getId()
              : undefined);
         const vertex_class_name = get_vertex_class_name(props, v.getId());
-        const edge_class_name = (v.getHalfEdge() !== undefined ? get_edge_class_name(props, v.getHalfEdge()) : "");
+        let edge_class_name = (v.getHalfEdge() !== undefined ? get_edge_class_name(props, v.getHalfEdge()) : "");
+        if (props.stage === 1) {
+            edge_class_name += " changed";
+        }
 
         const on_edge =
             (edge_id !== undefined
@@ -84,9 +87,12 @@ function FaceTable(props) {
         const edge =
             (<span><em>e</em><sub>{f.getHalfEdge().getId()}</sub></span>);
         const face_class_name = get_face_class_name(props, id);
-        const edge_class_name =
+        let edge_class_name =
             (f.getHalfEdge() !== undefined
              ? get_edge_class_name(props, f.getHalfEdge()) : "");
+        if (props.stage === 1) {
+            edge_class_name += " changed";
+        }
 
         return (
             <tr key={id}>
@@ -127,15 +133,33 @@ function HalfEdgeTable(props) {
         const prev_text = <span><em>e</em><sub>{e.getPrev().getId()}</sub></span>;
 
         const edge_class_name = get_edge_class_name(props, e);
-        const origin_class_name =
+        let origin_class_name =
             get_vertex_class_name(props, e.getOrigin().getId());
-        const twin_class_name = get_edge_class_name(props, e.getTwin());
-        const face_class_name =
+        let twin_class_name = get_edge_class_name(props, e.getTwin());
+        let face_class_name =
             get_face_class_name(props, (e.getFace() !== undefined
                                         ? e.getFace().getId()
                                         : undefined));
-        const next_class_name = get_edge_class_name(props, e.getNext());
-        const prev_class_name = get_edge_class_name(props, e.getPrev());
+        let next_class_name = get_edge_class_name(props, e.getNext());
+        let prev_class_name = get_edge_class_name(props, e.getPrev());
+        if (props.stage === 2 && (id === 2 || id === 3)) {
+            origin_class_name += " changed";
+            face_class_name += " changed";
+            next_class_name += " changed";
+            prev_class_name += " changed";
+        } else if (props.stage === 3 && id < 6 && id !== 2 && id !== 3) {
+            next_class_name += " changed";
+            prev_class_name += " changed";
+        }
+        if (props.check) {
+            // no check for face, origin, since the reverse map is arbitrary
+            if (e !== e.getTwin().getTwin())
+                twin_class_name += " inconsistent";
+            if (e !== e.getNext().getPrev())
+                next_class_name += " inconsistent";
+            if (e !== e.getPrev().getNext())
+                prev_class_name += " inconsistent";
+        }
 
         const on_face =
             (e.getFace() !== undefined
@@ -193,8 +217,16 @@ export class HalfEdgeTables extends React.Component {
         this.props.onHoverChange(h);
     }
 
-    onChangeOut(h) {
+    onChangeOut() {
         this.props.onHoverChange(null);
+    }
+
+    pinVis() {
+        if (document.getElementById("pin").checked) {
+            document.querySelector(".pin-container").classList.add("pinned");
+        } else {
+            document.querySelector(".pin-container").classList.remove("pinned");
+        }
     }
 
     render() {
@@ -209,21 +241,33 @@ export class HalfEdgeTables extends React.Component {
         return (
           <div className="half-edge-tables">
             <h4>Records</h4>
+            {props.allow_pinning ?
+             (<div className="pin-checkbox-container">
+                  <input type="checkbox" id="pin" name="pin"
+                         autoComplete="off" onClick={this.pinVis} />
+                  <label htmlFor="pin">Pin diagram to view</label>
+              </div>) : undefined}
             <div className="vertices">
                 <VertexTable mesh={this.props.mesh}
                              hover={this.props.hover}
+                             stage={this.props.stage}
+                             check={this.props.check}
                              onChange={this.onChange}
                              onChangeOut={this.onChangeOut} />
             </div>
             <div className="faces">
                 <FaceTable mesh={this.props.mesh}
                            hover={this.props.hover}
+                           stage={this.props.stage}
+                           check={this.props.check}
                            onChange={this.onChange}
                            onChangeOut={this.onChangeOut} />
             </div>
             <div className="half-edges">
                 <HalfEdgeTable mesh={this.props.mesh}
                                hover={this.props.hover}
+                               stage={this.props.stage}
+                               check={this.props.check}
                                onChange={this.onChange}
                                onChangeOut={this.onChangeOut} />
             </div>

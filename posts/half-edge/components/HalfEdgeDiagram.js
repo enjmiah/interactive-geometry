@@ -29,7 +29,9 @@ export class HalfEdgeDiagram extends D3Component {
         const faces = this.props.mesh.faces;
 
         let svg = (this.svg = d3.select(node).append('svg'));
-        svg = svg.attr("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`);
+        svg = svg
+            .attr("viewBox", `0 0 ${canvasWidth} ${canvasHeight}`)
+            .attr("class", "half-edge-diagram");
 
         // Define arrow-heads
         svg
@@ -132,10 +134,8 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("id", (v) => "vertex" + v.getId())
                     .on("mouseover", (v, i) => {
                         props.onHoverChange({type: "vertex", id: i});
-                        svg.select(`#vertex${i}`).classed("hover", true);
                     })
                     .on("mouseout", (v, i) => {
-                        svg.select(`#vertex${i}`).classed("hover", false);
                         props.onHoverChange(null);
                     });
         vertex_enter
@@ -171,10 +171,8 @@ export class HalfEdgeDiagram extends D3Component {
                     .attr("id", (e) => "edge" + e.getId())
                     .on("mouseover", (e, i) => {
                         props.onHoverChange({type: "edge", id: i});
-                        svg.select(`#edge${i}`).classed("hover", true);
                     })
                     .on("mouseout", (e, i) => {
-                        svg.select(`#edge${i}`).classed("hover", false);
                         props.onHoverChange(null);
                     });
         edge_enter
@@ -219,10 +217,8 @@ export class HalfEdgeDiagram extends D3Component {
                 .attr("id", (f) => `face${f.getId()}`)
                 .on("mouseover", (f, i) => {
                     props.onHoverChange({type: "face", id: i});
-                    svg.select(`#face${i}`).classed("hover", true);
                 })
                 .on("mouseout", (f, i) => {
-                    svg.select(`#face${i}`).classed("hover", false);
                     props.onHoverChange(null);
                 });
         face.merge(face_enter)
@@ -230,6 +226,7 @@ export class HalfEdgeDiagram extends D3Component {
             .attr("x", (f) => this.x(this.getArrow(f.getHalfEdge())[2].x()))
             .attr("y", (f) => this.y(this.getArrow(f.getHalfEdge())[2].y()));
 
+        svg.selectAll(".hover").classed("hover", false);
         if (props.hover) {
             if (props.hover.type === "vertex" || props.hover.type === "edge") {
                 svg.select(`#${props.hover.type}${props.hover.id}`)
@@ -243,8 +240,6 @@ export class HalfEdgeDiagram extends D3Component {
                     it = it.getNext();
                 } while (it !== start_it);
             }
-        } else {
-            svg.selectAll(".hover").classed("hover", false);
         }
     }
 
