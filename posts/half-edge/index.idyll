@@ -52,7 +52,7 @@ looking for.
 [TriangleCaption /]
 [/aside]
 
-A popular data structure which can answer such queries in constant time is the _half-edge data structure_.  In a half-edge data structure, we explicitly store the edges of the mesh by representing each edge with a pair of directed _half-edge twins_, with each of the two half-edges twins pointing in opposite directions.  A half-edge stores a reference to its twin, as well as references to the previous and next half-edges along the same face or hole.  A vertex stores its position and a reference to an arbitrary half-edge that originates from that vertex, and a face stores an arbitrary half-edge belonging to that face.  A half-edge data structure stores arrays of vertex, face, and half-edge records.
+A popular data structure that can answer such queries in constant time is the _half-edge data structure_.  In a half-edge data structure, we explicitly store the edges of the mesh by representing each edge with a pair of directed _half-edge twins_, with each of the two half-edge twins pointing in opposite directions.  A half-edge stores a reference to its twin, as well as references to the previous and next half-edges along the same face or hole.  A vertex stores its position and a reference to an arbitrary half-edge that originates from that vertex, and a face stores an arbitrary half-edge belonging to that face.  A half-edge data structure stores arrays of vertex, face, and half-edge records.
 
 For representing boundary edges (edges adjacent to a hole), we have two options.
 We can either represent boundary edges with a single half-edge whose twin
@@ -143,7 +143,7 @@ ring in counter-clockwise order, except that we replace `he = he.prev.twin` with
 
 ## Modifying a half-edge data structure
 
-In the previous section, we discussed how to iterate over a face and over a
+In the previous sections, we discussed how to iterate over a face and over a
 vertex ring.  Modifying a half-edge data structure is more tricky, because it
 can be easy for references to become inconsistent if the records are not
 modified properly.
